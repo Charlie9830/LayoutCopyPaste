@@ -36,10 +36,10 @@
 				<LayoutElement font_size="Small" center_x="0.16" center_y="-1.418" size_h="3.463" size_w="3.71" background_color="00000000" border_color="ff0000" icon="None" text="Hello" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">
 					<image />
 				</LayoutElement>
-				<LayoutElement font_size="Small" center_x="4.593" center_y="-2.191" size_h="1.835" size_w="2.568" background_color="00000000" icon="Mirror" text="hello" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">
+				<LayoutElement font_size="Small" center_x="4.593" center_y="-2.191" size_h="1.835" size_w="2.568" background_color="00000000" icon="Mirror" text="World" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">
 					<image />
 				</LayoutElement>
-				<LayoutElement font_size="Small" center_x="4.488" center_y="0.037" size_h="1.258" size_w="1.782" background_color="00000000" icon="World" text="copy" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">
+				<LayoutElement font_size="Small" center_x="4.488" center_y="0.037" size_h="1.258" size_w="1.782" background_color="00000000" icon="World" text="WOrld" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">
 					<image />
 				</LayoutElement>
 				<LayoutElement font_size="Small" center_x="9.268" center_y="-1.076" size_h="4.14" size_w="5.233" background_color="00000000" icon="None" text="9 to 5" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">

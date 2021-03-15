@@ -11,6 +11,7 @@ dependencies = {}
 build = {
    type = "builtin",
    modules = {
+      Builders = "Builders.lua"
       inspect = "inspect.lua"
       Mutation = "Mutation.lua"
       Utils = "Utils.lua"
