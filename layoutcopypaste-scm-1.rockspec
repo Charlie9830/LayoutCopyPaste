@@ -1,0 +1,26 @@
+package = "LayoutCopyPaste"
+version = "scm-1"
+source = {
+   url = "*** please add URL for source tarball, zip or repository here ***"
+}
+description = {
+   homepage = "*** please enter a project homepage ***",
+   license = "*** please specify a license ***"
+}
+dependencies = {}
+build = {
+   type = "builtin",
+   modules = {
+      inspect = "inspect.lua"
+      Mutation = "Mutation.lua"
+      Utils = "Utils.lua"
+      LayoutIO = "LayoutIO.lua"
+      ExportImport = "ExportImport.lua",
+      LayoutCopyPaste = "LayoutCopyPaste.lua",
+      XmlParser = "XmlParser.lua",
+      xml2lua = "xml2lua.lua",
+      ["xmlhandler.dom"] = "xmlhandler/dom.lua",
+      ["xmlhandler.print"] = "xmlhandler/print.lua",
+      ["xmlhandler.tree"] = "xmlhandler/tree.lua"
+   }
+}
