@@ -28,13 +28,38 @@ function Builders.SourceContent(fixtures, rectangles, texts, cObjects)
 
 end
 
-function Builders.XmlPaths(fixturesPath, rectanglesPath, textsPath, cObjectsPath)
+function Builders.XmlPaths(fixturesPath, fixturesIndexPath, rectanglesPath, textsPath, cObjectsPath)
     return {
         fixtures = fixturesPath,
+        fixturesIndex = fixturesIndexPath,
         rectangles = rectanglesPath,
         texts = textsPath,
         cObjects = cObjectsPath
     }
+end
+
+function Builders.SubFixKey(fix_id, sub_index, cha_id)
+    local key = ""
+    if fix_id ~= nil then
+        key = key .. fix_id .. "."
+    else
+        key = key .. '0.'
+    end
+
+    if sub_index ~= nil then
+        key = key .. sub_index .. "."
+    else
+        key = key .. '0.'
+    end
+
+    if cha_id ~= nil then
+        key = key .. cha_id
+    else
+        key = key .. '0'
+    end
+
+    return key
+
 end
 
 return Builders

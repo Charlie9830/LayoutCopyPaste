@@ -7,6 +7,7 @@ local handler = require("xmlhandler.tree")
 local xml2lua = require("xml2lua")
 local Mocks = require("Mocks")
 local inspect = require("inspect")
+local XmlUtils = require("XmlUtils")
 
 Mocks.initGmaMock()
 
@@ -14,6 +15,17 @@ Mocks.initGmaMock()
 DEV = false
 if gma.show.getvar("HOSTTYPE") == "Development" then
     DEV = true
+end
+
+InspectToFile = function(data)
+    if DEV == true then
+        local file = io.open('debugoutput.txt', "w+")
+        io.output(file)
+
+        io.write(inspect(data))
+
+        io.close()
+    end
 end
 
 -- USER CONFIG
@@ -24,6 +36,7 @@ local pasteRectangleText = "paste"
 -- CONFIG
 -- XML Paths
 local fixturesPath = {"MA", "Group", "LayoutData", "SubFixtures", "LayoutSubFix"}
+local fixturesIndexPath = {"MA", "Group", "Subfixtures", "Subfixture"}
 local rectanglesPath = {"MA", "Group", "LayoutData", "Rectangles", "LayoutElement"}
 local textsPath = {"MA", "Group", "LayoutData", "Texts", "LayoutElement"}
 local cObjectsPath = {"MA", "Group", "LayoutData", "CObjects", "LayoutCObject"}
@@ -42,7 +55,7 @@ if DEV == true then
 end
 local targetLayoutFilePath = maTempPath .. separator .. targetLayoutFileName
 if DEV == true then
-    targetLayoutFilePath = targetLayoutFilePath
+    targetLayoutFilePath = targetLayoutFileName
 end
 local outputLayoutFilePath = maRootPath .. separator .. 'importexport' -- MA recoils at the idea of importing a layout from any other folder except it's default importexport folder.
 if DEV == true then
@@ -74,7 +87,7 @@ local function Main()
     sendExportCommand(12, targetLayoutFileName, maTempPath)
 
     gma.feedback("Starting XML Processing")
-    local xmlPaths = Builders.XmlPaths(fixturesPath, rectanglesPath, textsPath, cObjectsPath)
+    local xmlPaths = Builders.XmlPaths(fixturesPath, fixturesIndexPath, rectanglesPath, textsPath, cObjectsPath)
 
     -- Init Source Layout XML Parser and Handler (1 Parser and Handler Combo per XML File)
     local sourceHandler = handler:new()
@@ -118,7 +131,32 @@ local function Main()
 
     -- Merge the XML files into an Output file.
     gma.feedback("Executing XML Layout Merge")
-    local output = Merge.execute(sourceContent, targetLayout, copySourceRec, pasteTargetRec, xmlPaths)
+
+    -- Cross Reference Source Fixtures with Fixtures already in the Target Layout. If their are duplicates, throw a message to the User.
+    local targetLayoutFixturesIndexNode = XmlUtils.getFixturesIndexNode(targetLayout, xmlPaths.fixturesIndex)
+    if XmlUtils.isNodeSingular(targetLayoutFixturesIndexNode) then
+        XmlUtils.listifySingularNode(targetLayoutFixturesIndexNode)
+    end
+
+    local targetFixturesLookup = Merge.buildFixtureLookup(targetLayoutFixturesIndexNode)
+    local duplicateFixtures = Merge.preValidateFixtureMerge(sourceContent.fixtures, targetFixturesLookup)
+
+    if #duplicateFixtures > 0 then
+        local message = [[
+            You have selected fixtures that already exist in the destination Layout. MA2 does not allow multiple instances of the same fixture
+            within the same layout. If you continue, those duplicate fixtures will be excluded from the copying process.
+            Are you sure you want to continue?
+        ]]
+
+        if gma.gui.confirm("Duplicate Fixtures", message) == nil then
+            return
+        end
+    end
+
+    -- Merge Non Fixture Items.
+    local xOffset, yOffset = Merge.calculatePosOffset(copySourceRec, pasteTargetRec)
+    local output = Merge.executeNonFixtures(sourceContent, targetLayout, xmlPaths, xOffset, yOffset)
+    output = Merge.executeFixtures(sourceContent.fixtures, output, xmlPaths, xOffset, yOffset, targetFixturesLookup)
 
     -- Write to Output storage
     gma.feedback("Writing Merged Layout to output File")

@@ -22,6 +22,16 @@ function Mocks.initGmaMock()
                 return 'Development'
             end
         end
+
+        gma.gui = {}
+        gma.gui.confirm = function(title, message)
+            print("\n")
+            print('----- ' .. title .. ' -----')
+            print(message)
+            print("\n")
+
+            return true;
+        end
     end
 end
 

@@ -105,4 +105,55 @@ function XmlUtils.coercePath(rootNode, path)
     end
 end
 
+function XmlUtils.cloneNode(node)
+    local orig_type = type(node)
+    local copy
+    if orig_type == 'table' then
+        copy = {}
+        for orig_key, orig_value in next, node, nil do
+            copy[XmlUtils.cloneNode(orig_key)] = XmlUtils.cloneNode(orig_value)
+        end
+        setmetatable(copy, XmlUtils.cloneNode(getmetatable(node)))
+    else -- number, string, boolean, etc
+        copy = node
+    end
+    return copy
+end
+
+function XmlUtils.getFixturesIndexNode(data, fixturesIndexPath)
+    -- Validate the provided path to the fixtures index. Coerce it into existence if required.
+    if XmlUtils.isValidXmlPath(data, fixturesIndexPath) == false then
+        XmlUtils.coercePath(data, fixturesIndexPath)
+    end
+
+    -- Get the Fixtures Index Node
+    return XmlUtils.traversePath(data, fixturesIndexPath)
+end
+
+-- Converts in place an existing singular node into a List, the existing data of the node becomes the element at index[1]
+function XmlUtils.listifySingularNode(node)
+    -- First determine if the provided node is Blank (No Attributes) and Childless, this is usually the result of the xmlPath being coerced into existence.
+    -- .. when this is the case we just want to remove the empty _attr property from the node. Otherwise we will end up adding a blank node to the XML output.
+    if XmlUtils.isBlankAndChildless(node) == true then
+        node._attr = nil
+        return
+    end
+
+    local packagedNode = {}
+    local keysToDelete = {}
+    packagedNode._attr = node._attr
+    node._attr = nil
+
+    for k, v in pairs(node) do
+        packagedNode[k] = v
+        table.insert(keysToDelete, k)
+    end
+
+    for i = 1, #keysToDelete do
+        node[keysToDelete[i]] = nil
+    end
+
+    node[1] = packagedNode
+end
+
 return XmlUtils

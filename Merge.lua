@@ -1,35 +1,12 @@
 local XmlUtils = require("XmlUtils")
 local inspect = require("inspect")
+local Builders = require "Builders"
 
 local Merge = {}
 
--- Converts in place an existing singular node into a List, the existing data of the node becomes the element at index[1]
-local function listifySingularNode(node)
-    -- First determine if the provided node is Blank (No Attributes) and Childless, this is usually the result of the xmlPath being coerced into existence.
-    -- .. when this is the case we just want to remove the empty _attr property from the node. Otherwise we will end up adding a blank node to the XML output.
-    if XmlUtils.isBlankAndChildless(node) == true then
-        node._attr = nil
-        return
-    end
 
-    local packagedNode = {}
-    local keysToDelete = {}
-    packagedNode._attr = node._attr
-    node._attr = nil
 
-    for k, v in pairs(node) do
-        packagedNode[k] = v
-        table.insert(keysToDelete, k)
-    end
-
-    for i = 1, #keysToDelete do
-        node[keysToDelete[i]] = nil
-    end
-
-    node[1] = packagedNode
-end
-
-local function calculatePosOffset(sourceCopyRec, targetPasteRec)
+function Merge.calculatePosOffset(sourceCopyRec, targetPasteRec)
     local xOffset = sourceCopyRec.centerX - targetPasteRec.centerX
     local yOffset = sourceCopyRec.centerY - targetPasteRec.centerY
 
@@ -48,6 +25,67 @@ local function translateNode(node, xOffset, yOffset)
     return
 end
 
+local function alreadyInFixturesIndex(subfixNodeAttrs, fixturesIndexLookup)
+    if subfixNodeAttrs == nil then
+        return false
+    end
+
+    print(Builders.SubFixKey(subfixNodeAttrs.fix_id, subfixNodeAttrs.sub_index, subfixNodeAttrs.cha_id))
+
+    return fixturesIndexLookup[Builders.SubFixKey(subfixNodeAttrs.fix_id, subfixNodeAttrs.sub_index,
+               subfixNodeAttrs.cha_id)] ~= nil
+end
+
+function Merge.buildFixtureLookup(fixturesIndexNode)
+    local fixturesIndexLookup = {}
+
+    for i = 1, #fixturesIndexNode do
+        local attr = fixturesIndexNode[i]._attr
+        fixturesIndexLookup[Builders.SubFixKey(attr.fix_id, attr.sub_index, attr.cha_id)] = fixturesIndexNode[i]
+    end
+
+    return fixturesIndexLookup
+end
+
+local function getPendingDuplicateFixtures(fixtures, targetFixtureLookup)
+    if fixtures == nil or #fixtures == 0 then
+        return {}
+    end
+
+    local duplicateFixtures = {}
+    local duplicateIndex = 1
+
+    for i = 1, #fixtures do
+        local subFixNode = fixtures[i]["Subfixture"]
+        if alreadyInFixturesIndex(subFixNode._attr, targetFixtureLookup) == true then
+            duplicateFixtures[duplicateIndex] = subFixNode
+            duplicateIndex = duplicateIndex + 1
+        end
+    end
+
+    return duplicateFixtures
+
+end
+
+-- Updates the Subfixtures XML index in place. Without a correct Subfixtures index, commands such as "SelFix Layout X" will not work correctly.
+local function updateFixturesIndex(fixtures, targetData, fixturesIndexNode, targetFixtureLookup, fixturesIndexPath)
+    if fixtures == nil or #fixtures == 0 then
+        -- Wrap it up boys, we are done here, nice work.
+        return
+    end
+
+    -- If the node is Singular, it will be of type:table with string properties, if it is not singular it will be of type:array. Therefore, if it's singular, 
+    -- .. we need to "Listify" it first.
+    if XmlUtils.isNodeSingular(fixturesIndexNode) then
+        XmlUtils.listifySingularNode(fixturesIndexNode)
+    end
+
+    for i = 1, #fixtures do
+        local incomingSubFixNode = fixtures[i]["Subfixture"]
+        table.insert(fixturesIndexNode, XmlUtils.cloneNode(incomingSubFixNode))
+    end
+end
+
 local function mergeContent(sourceContent, targetData, contentPath, xOffset, yOffset)
     if #sourceContent == 0 then
         -- Nothing to Merge in so just walk away, don't touch anything on your way out.
@@ -59,26 +97,32 @@ local function mergeContent(sourceContent, targetData, contentPath, xOffset, yOf
     end
 
     -- Obtain a reference to the Parent Node of the Elements, we are going to Mutate this Node in place.
-    local targetNodeRef = XmlUtils.traversePath(targetData, contentPath)
+    local targetNode = XmlUtils.traversePath(targetData, contentPath)
 
     -- If the node is Singular, it will be of type:table with string properties, if it is not singular it will be of type:array. Therefore, if it's singular, 
     -- .. we need to "Listify" it first.
-    if XmlUtils.isNodeSingular(targetNodeRef) then
-        listifySingularNode(targetNodeRef)
+    if XmlUtils.isNodeSingular(targetNode) then
+        XmlUtils.listifySingularNode(targetNode)
     end
     for i = 1, #sourceContent do
         -- Apply X,Y Translation to source Node.
         translateNode(sourceContent[i], xOffset, yOffset)
         -- Insert sourceContent nodes into our node reference.
-        table.insert(targetNodeRef, sourceContent[i])
+        table.insert(targetNode, sourceContent[i])
     end
 end
 
-function Merge.execute(sourceContent, targetData, copySourceRec, pasteTargetRec, xmlPaths)
-    local xOffset, yOffset = calculatePosOffset(copySourceRec, pasteTargetRec)
+function Merge.preValidateFixtureMerge(fixtures, targetFixturesLookup)
+    -- MA does not allow multiple instances of a single Fixture to appear on the same Layout. We must also follow this Rule.
+    -- Therefore we need to Prune out the fixtures that would double up.
+    -- Build a Lookup of existing instances of Subfixture in the index node. This will avoid Big O problems.
 
-    local output = targetData;
+    local duplicateFixtures = getPendingDuplicateFixtures(fixtures, targetFixturesLookup)
 
+    return duplicateFixtures
+end
+
+function Merge.executeNonFixtures(sourceContent, targetData, xmlPaths, xOffset, yOffset)
     -- Texts
     mergeContent(sourceContent.texts, targetData, xmlPaths.texts, xOffset, yOffset)
 
@@ -88,8 +132,27 @@ function Merge.execute(sourceContent, targetData, copySourceRec, pasteTargetRec,
     -- CObjects
     mergeContent(sourceContent.cObjects, targetData, xmlPaths.cObjects, xOffset, yOffset)
 
+    return targetData
+end
+
+function Merge.executeFixtures(fixtures, targetData, xmlPaths, xOffset, yOffset, fixtureLookup)
+    local prunedFixtures = {}
+    local pruneIndex = 1
+    for i = 1, #fixtures do
+        if alreadyInFixturesIndex(fixtures[i]["Subfixture"]._attr, fixtureLookup) == false then
+            prunedFixtures[pruneIndex] = fixtures[i]
+            pruneIndex = pruneIndex + 1
+        end
+    end
+
     -- Fixtures
-    mergeContent(sourceContent.fixtures, targetData, xmlPaths.fixtures, xOffset, yOffset)
+    mergeContent(prunedFixtures, targetData, xmlPaths.fixtures, xOffset, yOffset)
+
+    -- Update the Subfixtures index.
+    updateFixturesIndex(prunedFixtures, targetData, XmlUtils.getFixturesIndexNode(targetData, xmlPaths.fixturesIndex),
+        fixtureLookup, xmlPaths.fixturesIndex)
+
+    return targetData
 
 end
 
