@@ -1,8 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?> 
   <MA major_vers="3" stream_vers="60" minor_vers="9" xsi:schemaLocation="http://schemas.malighting.de/grandma2/xml/MA http://schemas.malighting.de/grandma2/xml/3.9.60/MA.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.malighting.de/grandma2/xml/MA">
       <Group index="11">
           <LayoutData subfixture_view_mode="DMX Layer" index="0" background_color="000000" default_gauge="None" visible_grid_h="1" marker_visible="true" snap_grid_h="0.5" snap_grid_w="0.5" visible_grid_w="1">
               <CObjects>
-                    <LayoutCObject size_h="1" center_y="0.662" border_color="5a5a5a" size_w="1" background_color="3c3c3c" select_group="1" font_size="Small" show_name="1" show_type="1" center_x="7.321" function_type="Pool icon" show_id="1" icon="None">
+                    <LayoutCObject size_h="1" center_y="1.976" border_color="5a5a5a" size_w="1" background_color="3c3c3c" select_group="1" font_size="Small" show_name="1" show_type="1" center_x="-1.857" function_type="Pool icon" show_id="1" icon="None">
                       <image>
 
                       </image>
@@ -14,7 +15,7 @@
                     </LayoutCObject>
               </CObjects>
               <Rectangles>
-                      <LayoutElement size_h="10.576" center_y="-0.183" select_group="1" show_dimmer_bar="Off" size_w="14.787" background_color="00000000" show_dimmer_value="Off" font_size="Small" show_type="1" show_name="1" center_x="5.484" show_id="1" text="paste" icon="None">
+                      <LayoutElement size_h="12.308" center_y="1.131" select_group="1" show_dimmer_bar="Off" size_w="22.308" background_color="00000000" show_dimmer_value="Off" font_size="Small" show_type="1" show_name="1" center_x="-3.694" show_id="1" text="paste" icon="None">
                         <image>
 
                         </image>
@@ -27,7 +28,7 @@
               </Texts>
           </LayoutData>
       </Group>
-      <Info datetime="2021-03-16T18:23:48" showfile="layoutcopypaste">
+      <Info datetime="2021-03-16T19:36:52" showfile="layoutcopypaste">
 
       </Info>
   </MA>

@@ -4,6 +4,8 @@ local inspect = require("inspect")
 
 local LayoutIO = {}
 
+local xmlDecl = "<?xml version=\"1.0\" encoding=\"utf-8\"?> \n"
+
 function LayoutIO.read(path, parser, handler)
     -- TODO: Process Hangs when writing to a File that doesnt exist. No Exceptions, just Stalls
     local file = io.open(path, "r")
@@ -25,7 +27,7 @@ function LayoutIO.write(path, data)
     local file = io.open(path, "w+")
     io.output(file)
 
-    -- TODO - THis is currently not adding in the XML Declaration Tag
+    io.write(xmlDecl)
     io.write(xml2lua.toXml(data))
 
     io.close()
