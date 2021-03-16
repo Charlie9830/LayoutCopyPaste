@@ -94,10 +94,10 @@ local function Main()
 
     -- Query for elements inside the Copy Selection Rectangle. Build into sourceContent Container.
     local sourceContent =
-        Builders.SourceContent(Query.getElements(sourceLayout, xmlPaths.fixtures, copySourceRec), -- Fixtures
-        Query.getElements(sourceLayout, xmlPaths.rectangles, copySourceRec), -- Rectangles
-        Query.getElements(sourceLayout, xmlPaths.texts, copySourceRec), -- Texts
-        Query.getElements(sourceLayout, xmlPaths.cObjects, copySourceRec) -- cObjects (Pool Objects)
+        Builders.SourceContent(Query.getElements(sourceLayout, xmlPaths.fixtures, copySourceRec, ""), -- Fixtures
+        Query.getElements(sourceLayout, xmlPaths.rectangles, copySourceRec, copyRectangleText), -- Rectangles
+        Query.getElements(sourceLayout, xmlPaths.texts, copySourceRec, ""), -- Texts
+        Query.getElements(sourceLayout, xmlPaths.cObjects, copySourceRec, "") -- cObjects (Pool Objects)
         )
 
     -- Init Target Layout XML Parser and Handler (1 Parser and Handler Combo per XML File)
@@ -108,7 +108,7 @@ local function Main()
     gma.feedback("Reading Target Layout")
     local targetLayout = LayoutIO.read(targetLayoutFilePath, targetParser, targetHandler)
 
-    -- Silenced until implemented properly.
+    -- Find the Target Pasteing Rectangle
     local pasteTargetRec = Query.findRec(targetLayout, xmlPaths.rectangles, pasteRectangleText)
 
     if pasteTargetRec == nil then
