@@ -3,8 +3,6 @@ local Builders = require("Builders")
 local XmlUtils = require("XmlUtils")
 local Query = {}
 
-
-
 local function hitTest(pointX, pointY, selectionRec)
     local pointX = tonumber(pointX)
     local pointY = tonumber(pointY)
@@ -16,12 +14,9 @@ local function matchRec(node, idText)
     return node._attr ~= nil and node._attr.text == idText
 end
 
-
-
 function Query.findRec(data, xmlRectanglesPath, idText)
     -- Validate the Path to Rectangles
     if XmlUtils.isValidXmlPath(data, xmlRectanglesPath) == false then
-        print("Invalid Path to Rectangles")
         return nil
     end
 
@@ -38,7 +33,7 @@ function Query.findRec(data, xmlRectanglesPath, idText)
     return nil
 end
 
-function Query.getElements(data, xmlPath, selectionRec)
+function Query.getElements(data, xmlPath, selectionRec, selectionRecIdText)
     if XmlUtils.isValidXmlPath(data, xmlPath) == false then
         return {}
     end
@@ -49,7 +44,8 @@ function Query.getElements(data, xmlPath, selectionRec)
     local elementIndex = 1
 
     for i = 1, #nodes do
-        if hitTest(nodes[i]._attr.center_x, nodes[i]._attr.center_y, selectionRec) == true then
+        if hitTest(nodes[i]._attr.center_x, nodes[i]._attr.center_y, selectionRec) == true and
+            matchRec(nodes[i], selectionRecIdText) == false then
             elements[elementIndex] = nodes[i]
             elementIndex = elementIndex + 1
         end

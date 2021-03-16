@@ -29,7 +29,26 @@ local function listifySingularNode(node)
     node[1] = packagedNode
 end
 
-local function mergeContent(sourceContent, targetData, pasteTargetRec, contentPath)
+local function calculatePosOffset(sourceCopyRec, targetPasteRec)
+    local xOffset = sourceCopyRec.centerX - targetPasteRec.centerX
+    local yOffset = sourceCopyRec.centerY - targetPasteRec.centerY
+
+    return xOffset, yOffset
+end
+
+-- Performs a Translate (Move) of an node in place.
+local function translateNode(node, xOffset, yOffset)
+    if node == nil or node._attr == nil then
+        return
+    end
+
+    node._attr['center_x'] = tonumber(node._attr['center_x']) - xOffset
+    node._attr['center_y'] = tonumber(node._attr['center_y']) - yOffset
+
+    return
+end
+
+local function mergeContent(sourceContent, targetData, contentPath, xOffset, yOffset)
     -- Validate the provided Xml Path. Coerce it into existence if required.
     if XmlUtils.isValidXmlPath(targetData, contentPath) == false then
         XmlUtils.coercePath(targetData, contentPath)
@@ -44,23 +63,26 @@ local function mergeContent(sourceContent, targetData, pasteTargetRec, contentPa
         listifySingularNode(targetNodeRef)
     end
     for i = 1, #sourceContent do
+        -- Apply X,Y Translation to source Node.
+        translateNode(sourceContent[i], xOffset, yOffset)
         -- Insert sourceContent nodes into our node reference.
         table.insert(targetNodeRef, sourceContent[i])
     end
-
 end
 
-function Merge.execute(sourceContent, targetData, pasteTargetRec, xmlPaths)
+function Merge.execute(sourceContent, targetData, copySourceRec, pasteTargetRec, xmlPaths)
+    local xOffset, yOffset = calculatePosOffset(copySourceRec, pasteTargetRec)
+
     local output = targetData;
 
     -- Texts
-    mergeContent(sourceContent.texts, targetData, pasteTargetRec, xmlPaths.texts)
-    
+    mergeContent(sourceContent.texts, targetData, xmlPaths.texts, xOffset, yOffset)
+
     -- Rectangles
-    mergeContent(sourceContent.rectangles, targetData, pasteTargetRec, xmlPaths.rectangles)
+    mergeContent(sourceContent.rectangles, targetData, xmlPaths.rectangles, xOffset, yOffset)
 
     -- CObjects
-    mergeContent(sourceContent.cObjects, targetData, pasteTargetRec, xmlPaths.cObjects)
+    mergeContent(sourceContent.cObjects, targetData, xmlPaths.cObjects, xOffset, yOffset)
 
     return output
 end

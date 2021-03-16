@@ -5,33 +5,28 @@ local Builders = require("Builders")
 local Merge = require("Merge")
 local handler = require("xmlhandler.tree")
 local xml2lua = require("xml2lua")
+local Mocks = require("Mocks")
 local inspect = require("inspect")
 
--- GMA Mocking Overrides --
--- local gma = {}
--- gma.feedback = function(message)
---     print("FEEDBACK:  " .. message)
--- end
--- gma.cmd = function(cmd)
---     print("COMMAND:   " .. cmd)
--- end
--- gma.show = {}
--- gma.show.getvar = function(varname)
---     if varname == "TEMPPATH" then
---         return "C:\\ProgramData\\MA Lighting Technologies\\grandma\\gma2_V_3.9.60\\temp"
---     end
--- end
--- END GMA Mocking Overrides --
+Mocks.initGmaMock()
+
+-- Set DEV Mode
+DEV = false
+if gma.show.getvar("HOSTTYPE") == "Development" then
+    DEV = true
+end
+
+-- USER CONFIG
+local copyRectangleText = "copy"
+local pasteRectangleText = "paste"
+-- END USER CONFIG
+
 -- CONFIG
 -- XML Paths
 local fixturesPath = {"MA", "Group", "LayoutData", "SubFixtures", "LayoutSubFix"}
 local rectanglesPath = {"MA", "Group", "LayoutData", "Rectangles", "LayoutElement"}
 local textsPath = {"MA", "Group", "LayoutData", "Texts", "LayoutElement"}
 local cObjectsPath = {"MA", "Group", "LayoutData", "CObjects", "LayoutCObject"}
-
--- USER CONFIG
-local copyRectangleText = "copy"
-local pasteRectangleText = "paste"
 
 -- CONFIG --
 local separator = '\92'
@@ -42,8 +37,18 @@ local targetLayoutFileName = "lcp_targetlayout.xml"
 local outputLayoutFileName = "lcp_outputlayout.xml"
 
 local sourceLayoutFilePath = maTempPath .. separator .. sourceLayoutFileName
+if DEV == true then
+    sourceLayoutFilePath = sourceLayoutFileName
+end
 local targetLayoutFilePath = maTempPath .. separator .. targetLayoutFileName
+if DEV == true then
+    targetLayoutFilePath = targetLayoutFilePath
+end
 local outputLayoutFilePath = maRootPath .. separator .. 'importexport' -- MA recoils at the idea of importing a layout from any other folder except it's default importexport folder.
+if DEV == true then
+    outputLayoutFilePath = outputLayoutFileName
+end
+
 local quote = "\""
 -- END CONFIG --
 
@@ -57,8 +62,11 @@ local function sendImportCommand(layoutNumber, fileName)
     gma.cmd("Import " .. quote .. fileName .. quote .. " At Layout " .. layoutNumber)
 end
 
-local function Main()
+local function throwError(message)
+    gma.feedback(message)
+end
 
+local function Main()
     gma.feedback("Running Layout Copy Paste")
     gma.feedback("Exporting Source Layout")
     sendExportCommand(11, sourceLayoutFileName, maTempPath)
@@ -79,6 +87,11 @@ local function Main()
     -- Find the Copy Selection Rectangle
     local copySourceRec = Query.findRec(sourceLayout, rectanglesPath, copyRectangleText)
 
+    if copySourceRec == nil then
+        throwError("Could not find Copy Rectangle on Source Layout.")
+        return
+    end
+
     -- Query for elements inside the Copy Selection Rectangle. Build into sourceContent Container.
     local sourceContent =
         Builders.SourceContent(Query.getElements(sourceLayout, xmlPaths.fixtures, copySourceRec), -- Fixtures
@@ -96,20 +109,35 @@ local function Main()
     local targetLayout = LayoutIO.read(targetLayoutFilePath, targetParser, targetHandler)
 
     -- Silenced until implemented properly.
-    local pasteTargetRec = {} -- Query.findRec(targetLayout, xmlPaths.rectangles, pasteRectangleText)
+    local pasteTargetRec = Query.findRec(targetLayout, xmlPaths.rectangles, pasteRectangleText)
 
+    if pasteTargetRec == nil then
+        throwError("Could not find Paste Target Rec on Target Layout")
+        return
+    end
+
+    -- Merge the XML files into an Output file.
     gma.feedback("Executing XML Layout Merge")
-    local output = Merge.execute(sourceContent, targetLayout, pasteTargetRec, xmlPaths)
+    local output = Merge.execute(sourceContent, targetLayout, copySourceRec, pasteTargetRec, xmlPaths)
 
+    -- Write to Output storage
     gma.feedback("Writing Merged Layout to output File")
-    LayoutIO.write(outputLayoutFilePath..separator..outputLayoutFileName, output)
 
+    if DEV == true then
+        LayoutIO.write(outputLayoutFilePath, output)
+    else
+        LayoutIO.write(outputLayoutFilePath .. separator .. outputLayoutFileName, output)
+    end
+
+    -- Command MA to import the file we just output.
     gma.feedback("Asking MA to Import Output File")
     sendImportCommand(12, outputLayoutFileName)
 
     gma.feedback("Complete")
-
 end
 
-return Main
-
+if DEV == true then
+    Main()
+else
+    return Main
+end
