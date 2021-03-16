@@ -49,6 +49,10 @@ local function translateNode(node, xOffset, yOffset)
 end
 
 local function mergeContent(sourceContent, targetData, contentPath, xOffset, yOffset)
+    if #sourceContent == 0 then
+        -- Nothing to Merge in so just walk away, don't touch anything on your way out.
+        return
+    end
     -- Validate the provided Xml Path. Coerce it into existence if required.
     if XmlUtils.isValidXmlPath(targetData, contentPath) == false then
         XmlUtils.coercePath(targetData, contentPath)
@@ -84,7 +88,9 @@ function Merge.execute(sourceContent, targetData, copySourceRec, pasteTargetRec,
     -- CObjects
     mergeContent(sourceContent.cObjects, targetData, xmlPaths.cObjects, xOffset, yOffset)
 
-    return output
+    -- Fixtures
+    mergeContent(sourceContent.fixtures, targetData, xmlPaths.fixtures, xOffset, yOffset)
+
 end
 
 return Merge
