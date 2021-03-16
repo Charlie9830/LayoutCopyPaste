@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <MA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.malighting.de/grandma2/xml/MA" xsi:schemaLocation="http://schemas.malighting.de/grandma2/xml/MA http://schemas.malighting.de/grandma2/xml/3.9.60/MA.xsd" major_vers="3" minor_vers="9" stream_vers="60">
-	<Info datetime="2021-03-15T22:53:41" showfile="layoutcopypaste" />
+	<Info datetime="2021-03-16T13:39:35" showfile="layoutcopypaste" />
 	<Group index="10" name="Base">
 		<Subfixtures>
 			<Subfixture fix_id="1" />
@@ -14,7 +14,7 @@
 		</Subfixtures>
 		<LayoutData index="0" marker_visible="true" background_color="000000" visible_grid_h="1" visible_grid_w="1" snap_grid_h="0.5" snap_grid_w="0.5" default_gauge="Filled &amp; Symbol" subfixture_view_mode="DMX Layer">
 			<SubFixtures>
-				<LayoutSubFix center_x="-0.233" center_y="-2.124" size_h="1" size_w="1" background_color="00000000" icon="None" show_id="1" show_type="1" function_type="Filled" select_group="1">
+				<LayoutSubFix center_x="-5.186" center_y="-2.166" size_h="1" size_w="1" background_color="00000000" icon="None" show_id="1" show_type="1" function_type="Filled" select_group="1">
 					<image />
 					<Subfixture fix_id="1" />
 				</LayoutSubFix>
@@ -38,7 +38,7 @@
 					<image />
 					<Subfixture cha_id="1002" />
 				</LayoutSubFix>
-				<LayoutSubFix center_x="3.685" center_y="-1.436" size_h="1" size_w="1" background_color="00000000" icon="None" show_id="1" show_type="1" function_type="Filled" select_group="1">
+				<LayoutSubFix center_x="-4.123" center_y="-3.661" size_h="1" size_w="1" background_color="00000000" icon="None" show_id="1" show_type="1" function_type="Filled" select_group="1">
 					<image />
 					<Subfixture cha_id="1003" />
 				</LayoutSubFix>
@@ -72,7 +72,7 @@
 						<No>3</No>
 					</CObject>
 				</LayoutCObject>
-				<LayoutCObject font_size="Small" center_x="1.829" center_y="-0.179" size_h="1" size_w="1" background_color="3c3c3c" border_color="5a5a5a" icon="None" show_id="1" show_name="1" show_type="1" function_type="Pool icon" select_group="1">
+				<LayoutCObject font_size="Small" center_x="3.546" center_y="0.005" size_h="1" size_w="1" background_color="3c3c3c" border_color="5a5a5a" icon="None" show_id="1" show_name="1" show_type="1" function_type="Pool icon" select_group="1">
 					<image />
 					<CObject name="OFF Uni Range 4">
 						<No>13</No>
@@ -104,7 +104,7 @@
 						<No>3</No>
 					</CObject>
 				</LayoutCObject>
-				<LayoutCObject font_size="Small" center_x="0.066" center_y="1.416" size_h="1" size_w="1" background_color="3c3c3c" border_color="5a5a5a" icon="None" show_id="1" show_name="1" show_type="1" function_type="Pool icon" select_group="1">
+				<LayoutCObject font_size="Small" center_x="1.446" center_y="1.354" size_h="1" size_w="1" background_color="3c3c3c" border_color="5a5a5a" icon="None" show_id="1" show_name="1" show_type="1" function_type="Pool icon" select_group="1">
 					<image />
 					<CObject name="Sequ 4">
 						<No>25</No>
@@ -150,10 +150,10 @@
 				</LayoutCObject>
 			</CObjects>
 			<Rectangles>
-				<LayoutElement font_size="Small" center_x="1.524" center_y="-0.263" size_h="5.352" size_w="6.438" background_color="00000000" icon="None" text="copy" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">
+				<LayoutElement font_size="Small" center_x="1.502" center_y="-0.308" size_h="5.352" size_w="6.438" background_color="00000000" icon="None" text="copy" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">
 					<image />
 				</LayoutElement>
-				<LayoutElement font_size="Small" center_x="-0.637" center_y="-0.064" size_h="0.631" size_w="0.562" background_color="00000000" icon="None" text="Reccy" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">
+				<LayoutElement font_size="Small" center_x="-0.637" center_y="-0.126" size_h="0.631" size_w="0.562" background_color="00000000" icon="None" text="Reccy" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">
 					<image />
 				</LayoutElement>
 				<LayoutElement font_size="Small" center_x="9.911" center_y="-1.146" size_h="3.463" size_w="3.71" background_color="00000000" icon="None" text="Reccy" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">

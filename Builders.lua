@@ -18,4 +18,23 @@ function Builders.Rec(recXmlNode)
     return rec
 end
 
+function Builders.SourceContent(fixtures, rectangles, texts, cObjects)
+    return {
+        fixtures = fixtures,
+        rectangles = rectangles,
+        texts = texts,
+        cObjects = cObjects
+    }
+
+end
+
+function Builders.XmlPaths(fixturesPath, rectanglesPath, textsPath, cObjectsPath)
+    return {
+        fixtures = fixturesPath,
+        rectangles = rectanglesPath,
+        texts = textsPath,
+        cObjects = cObjectsPath
+    }
+end
+
 return Builders

@@ -1,10 +1,11 @@
 local Utils = require "Utils"
 local xml2lua = require("xml2lua")
-local handler = require("xmlhandler.tree")
+local inspect = require("inspect")
 
 local LayoutIO = {}
 
-function LayoutIO.read(path)
+function LayoutIO.read(path, parser, handler)
+    -- TODO: Process Hangs when writing to a File that doesnt exist. No Exceptions, just Stalls
     local file = io.open(path, "r")
     io.input(file)
 
@@ -15,7 +16,6 @@ function LayoutIO.read(path)
 
     io.close(file)
 
-    local parser = xml2lua.parser(handler)
     parser:parse(Utils.trim(xml))
 
     return handler.root
@@ -24,7 +24,10 @@ end
 function LayoutIO.write(path, data)
     local file = io.open(path, "w+")
     io.output(file)
+
+    -- TODO - THis is currently not adding in the XML Declaration Tag
     io.write(xml2lua.toXml(data))
+
     io.close()
 end
 

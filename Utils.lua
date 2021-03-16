@@ -12,4 +12,20 @@ function Utils.trimBOM(xml)
     return trimmed
 end
 
+-- Determines if the provided object has any properties. Properties defined as non integer accsessors. Ignores existence of integer accsessors.
+function Utils.hasProperties(object)
+    if object == nil then
+        return false
+    end
+
+    local hasSomething = false
+
+    for k, v in pairs(object) do
+        hasSomething = true
+        break
+    end
+
+    return hasSomething
+end
+
 return Utils
