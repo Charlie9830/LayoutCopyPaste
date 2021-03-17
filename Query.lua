@@ -33,6 +33,55 @@ function Query.findRec(data, xmlRectanglesPath, idText)
     return nil
 end
 
+
+function Query.getCollidingFixtures(sourceFixtures, targetFixtureSet)
+    if sourceFixtures == nil or #sourceFixtures == 0 then
+        return 0, {}
+    end
+
+    -- Add source Fixtures SubFixKey to returnSet if it appears in targetFixtureSet.
+    local returnSet = {}
+    local collisionCount = 0
+    for i = 1, #sourceFixtures do
+        local subFixNode = sourceFixtures[i]["Subfixture"]
+        local attr = subFixNode._attr
+        local subFixKey = Builders.SubFixKey(attr.fix_id, attr.sub_index, attr.cha_id)
+
+        if table.has(targetFixtureSet, subFixKey) == true then
+            returnSet[subFixKey] = true
+            collisionCount = collisionCount + 1
+        end
+    end
+
+    return collisionCount, returnSet
+end
+
+function Query.peekFixtureIndex(data, xmlPath)
+    if XmlUtils.isValidXmlPath(data, xmlPath) == false then
+        -- If the path is invalid, then there are no Fixtures in the Layout.
+        return {}
+    end
+
+    local fixturesIndexNode = XmlUtils.traversePath(data, xmlPath)
+
+    -- Extract the fixture data from the node, we can't use LisitfySingularNode as it would be an antipattern to mutate the underlying table in a Query Function.
+    local returnSet = {}
+    if XmlUtils.isNodeSingular(fixturesIndexNode) then
+        local attr = fixturesIndexNode._attr
+        returnSet[Builders.SubFixKey(attr["fix_id"], attr["sub_index"], attr["cha_id"])] = true
+        return returnSet
+    else
+        for i = 1, #fixturesIndexNode do
+            local attr = fixturesIndexNode[i]._attr
+            returnSet[Builders.SubFixKey(attr["fix_id"], attr["sub_index"], attr["cha_id"])] = true
+        end
+
+        return returnSet
+    end
+
+    return {}
+end
+
 function Query.getElements(data, xmlPath, selectionRec, selectionRecIdText)
     if XmlUtils.isValidXmlPath(data, xmlPath) == false then
         return {}

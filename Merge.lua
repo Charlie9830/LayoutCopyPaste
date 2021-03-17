@@ -1,10 +1,9 @@
 local XmlUtils = require("XmlUtils")
 local inspect = require("inspect")
 local Builders = require "Builders"
+local Query = require "Query"
 
 local Merge = {}
-
-
 
 function Merge.calculatePosOffset(sourceCopyRec, targetPasteRec)
     local xOffset = sourceCopyRec.centerX - targetPasteRec.centerX
@@ -64,11 +63,10 @@ local function getPendingDuplicateFixtures(fixtures, targetFixtureLookup)
     end
 
     return duplicateFixtures
-
 end
 
 -- Updates the Subfixtures XML index in place. Without a correct Subfixtures index, commands such as "SelFix Layout X" will not work correctly.
-local function updateFixturesIndex(fixtures, targetData, fixturesIndexNode, targetFixtureLookup, fixturesIndexPath)
+local function updateFixturesIndex(fixtures, fixturesIndexNode)
     if fixtures == nil or #fixtures == 0 then
         -- Wrap it up boys, we are done here, nice work.
         return
@@ -135,22 +133,16 @@ function Merge.executeNonFixtures(sourceContent, targetData, xmlPaths, xOffset, 
     return targetData
 end
 
-function Merge.executeFixtures(fixtures, targetData, xmlPaths, xOffset, yOffset, fixtureLookup)
-    local prunedFixtures = {}
-    local pruneIndex = 1
-    for i = 1, #fixtures do
-        if alreadyInFixturesIndex(fixtures[i]["Subfixture"]._attr, fixtureLookup) == false then
-            prunedFixtures[pruneIndex] = fixtures[i]
-            pruneIndex = pruneIndex + 1
-        end
+function Merge.executeFixtures(fixtures, targetData, xmlPaths, xOffset, yOffset)
+    if #fixtures == 0 then
+        return targetData
     end
 
-    -- Fixtures
-    mergeContent(prunedFixtures, targetData, xmlPaths.fixtures, xOffset, yOffset)
+    -- Merge LayoutFixtures.
+    mergeContent(fixtures, targetData, xmlPaths.fixtures, xOffset, yOffset)
 
     -- Update the Subfixtures index.
-    updateFixturesIndex(prunedFixtures, targetData, XmlUtils.getFixturesIndexNode(targetData, xmlPaths.fixturesIndex),
-        fixtureLookup, xmlPaths.fixturesIndex)
+    updateFixturesIndex(fixtures, XmlUtils.getFixturesIndexNode(targetData, xmlPaths.fixturesIndex))
 
     return targetData
 

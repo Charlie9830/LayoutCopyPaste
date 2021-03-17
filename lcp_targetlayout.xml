@@ -3,8 +3,6 @@
 	xmlns="http://schemas.malighting.de/grandma2/xml/MA" xsi:schemaLocation="http://schemas.malighting.de/grandma2/xml/MA http://schemas.malighting.de/grandma2/xml/3.9.60/MA.xsd" major_vers="3" minor_vers="9" stream_vers="60">
 	<Info datetime="2021-03-16T18:31:22" showfile="layoutcopypaste" />
 	<Group index="11">
-
-
 		<LayoutData wtf="AVENGERS" index="0" marker_visible="true" background_color="000000" visible_grid_h="1" visible_grid_w="1" snap_grid_h="0.5" snap_grid_w="0.5" default_gauge="None" subfixture_view_mode="DMX Layer">
 			<Rectangles>
 				<LayoutElement font_size="Small" center_x="-3.694" center_y="1.131" size_h="12.308" size_w="22.308" background_color="00000000" icon="None" text="paste" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">

@@ -8,6 +8,7 @@ local xml2lua = require("xml2lua")
 local Mocks = require("Mocks")
 local inspect = require("inspect")
 local XmlUtils = require("XmlUtils")
+local Dialogs = require("Dialogs")
 
 Mocks.initGmaMock()
 
@@ -64,6 +65,15 @@ end
 
 local quote = "\""
 -- END CONFIG --
+
+-- LUA Standard Library Extensions
+table.has = function(set, propertyName)
+    return set[propertyName] ~= nil
+end
+
+
+
+-- END LUA Standard Library Extensions
 
 local function sendExportCommand(layoutNumber, fileName, dirPath)
     gma.cmd("Export Layout " .. layoutNumber .. " " .. quote .. fileName .. quote .. " /p = " .. quote .. dirPath ..
@@ -129,35 +139,26 @@ local function Main()
         return
     end
 
+    -- Validate that we arent going to cause Fixture Collisions in the Target Layout.
+    local targetLayoutFixtureIds = Query.peekFixtureIndex(targetLayout, xmlPaths.fixturesIndex)
+
+    local collisionCount, collidingFixtureIds = Query.getCollidingFixtures(sourceContent.fixtures,
+                                                    targetLayoutFixtureIds)
+
+    if collisionCount > 0 and Dialogs.throwFixtureCollisionConfirm() == false then
+        return
+    end
+
+    -- Prune Colliding Fixtures (if any)
+    sourceContent.fixtures = Utils.pruneFixtures(collisionCount, sourceContent.fixtures, collidingFixtureIds)
+
     -- Merge the XML files into an Output file.
     gma.feedback("Executing XML Layout Merge")
-
-    -- Cross Reference Source Fixtures with Fixtures already in the Target Layout. If their are duplicates, throw a message to the User.
-
-    local targetLayoutFixturesIndexNode = XmlUtils.getFixturesIndexNode(targetLayout, xmlPaths.fixturesIndex)
-    if XmlUtils.isNodeSingular(targetLayoutFixturesIndexNode) then
-        XmlUtils.listifySingularNode(targetLayoutFixturesIndexNode)
-    end
-
-    local targetFixturesLookup = Merge.buildFixtureLookup(targetLayoutFixturesIndexNode)
-    local duplicateFixtures = Merge.preValidateFixtureMerge(sourceContent.fixtures, targetFixturesLookup)
-
-    if #duplicateFixtures > 0 then
-        local message = [[
-            You have selected fixtures that already exist in the destination Layout. MA2 does not allow multiple instances of the same fixture
-            within the same layout. If you continue, those duplicate fixtures will be excluded from the copying process.
-            Are you sure you want to continue?
-        ]]
-
-        if gma.gui.confirm("Duplicate Fixtures", message) == nil then
-            return
-        end
-    end
 
     -- Merge Non Fixture Items.
     local xOffset, yOffset = Merge.calculatePosOffset(copySourceRec, pasteTargetRec)
     local output = Merge.executeNonFixtures(sourceContent, targetLayout, xmlPaths, xOffset, yOffset)
-    output = Merge.executeFixtures(sourceContent.fixtures, output, xmlPaths, xOffset, yOffset, targetFixturesLookup)
+    output = Merge.executeFixtures(sourceContent.fixtures, output, xmlPaths, xOffset, yOffset)
 
     -- Write to Output storage
     gma.feedback("Writing Merged Layout to output File")

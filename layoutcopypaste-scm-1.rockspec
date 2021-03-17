@@ -11,6 +11,7 @@ dependencies = {}
 build = {
    type = "builtin",
    modules = {
+      Dialogs = "Dialogs.lua"
       Mocks = "Mocks.lua"
       XmlUtils = "XmlUtils.lua"
       Merge = "Merge.lua"
