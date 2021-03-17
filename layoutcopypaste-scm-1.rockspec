@@ -11,6 +11,7 @@ dependencies = {}
 build = {
    type = "builtin",
    modules = {
+      Commands = "Commands.lua
       Dialogs = "Dialogs.lua"
       Mocks = "Mocks.lua"
       XmlUtils = "XmlUtils.lua"

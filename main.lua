@@ -9,6 +9,7 @@ local Mocks = require("Mocks")
 local inspect = require("inspect")
 local XmlUtils = require("XmlUtils")
 local Dialogs = require("Dialogs")
+local Commands = require("Commands")
 
 Mocks.initGmaMock()
 
@@ -63,7 +64,8 @@ if DEV == true then
     outputLayoutFilePath = outputLayoutFileName
 end
 
-local quote = "\""
+Quote = "\""
+
 -- END CONFIG --
 
 -- LUA Standard Library Extensions
@@ -85,16 +87,6 @@ end
 
 -- END LUA Standard Library Extensions
 
-local function sendExportCommand(layoutNumber, fileName, dirPath)
-    gma.cmd("Export Layout " .. layoutNumber .. " " .. quote .. fileName .. quote .. " /p = " .. quote .. dirPath ..
-                quote)
-end
-
-local function sendImportCommand(layoutNumber, fileName)
-    -- gma.cmd("Import \"lcp_sourcelayout.xml\" At Layout 12")
-    gma.cmd("Import " .. quote .. fileName .. quote .. " At Layout " .. layoutNumber)
-end
-
 local function throwError(message)
     gma.feedback(message)
 end
@@ -102,9 +94,9 @@ end
 local function Main()
     gma.feedback("Running Layout Copy Paste")
     gma.feedback("Exporting Source Layout")
-    sendExportCommand(11, sourceLayoutFileName, maTempPath)
+    Commands.sendExportCommand(11, sourceLayoutFileName, maTempPath)
     gma.feedback("Exporting Target Layout")
-    sendExportCommand(12, targetLayoutFileName, maTempPath)
+    Commands.sendExportCommand(12, targetLayoutFileName, maTempPath)
 
     gma.feedback("Starting XML Processing")
     local xmlPaths = Builders.XmlPaths(fixturesPath, fixturesIndexPath, rectanglesPath, textsPath, cObjectsPath)
@@ -181,7 +173,7 @@ local function Main()
 
     -- Command MA to import the file we just output.
     gma.feedback("Asking MA to Import Output File")
-    sendImportCommand(12, outputLayoutFileName)
+    Commands.sendImportCommand(12, outputLayoutFileName)
 
     gma.feedback("Complete")
 end
