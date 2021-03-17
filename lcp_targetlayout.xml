@@ -3,9 +3,7 @@
 	xmlns="http://schemas.malighting.de/grandma2/xml/MA" xsi:schemaLocation="http://schemas.malighting.de/grandma2/xml/MA http://schemas.malighting.de/grandma2/xml/3.9.60/MA.xsd" major_vers="3" minor_vers="9" stream_vers="60">
 	<Info datetime="2021-03-16T18:31:22" showfile="layoutcopypaste" />
 	<Group index="11">
-		<Subfixtures>
-			<Subfixture fix_id="2002"/>
-		</Subfixtures>
+
 
 		<LayoutData wtf="AVENGERS" index="0" marker_visible="true" background_color="000000" visible_grid_h="1" visible_grid_w="1" snap_grid_h="0.5" snap_grid_w="0.5" default_gauge="None" subfixture_view_mode="DMX Layer">
 			<Rectangles>
@@ -13,13 +11,6 @@
 					<image />
 				</LayoutElement>
 			</Rectangles>
-
-			<SubFixtures>
-				<LayoutSubFix center_x="1.667" center_y="-0.391" size_h="1" size_w="1" background_color="00000000" icon="None" show_id="1" show_type="1" function_type="Filled" select_group="1">
-					<image />
-					<Subfixture fix_id="2002" />
-				</LayoutSubFix>
-			</SubFixtures>
 		</LayoutData>
 
 

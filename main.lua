@@ -133,6 +133,7 @@ local function Main()
     gma.feedback("Executing XML Layout Merge")
 
     -- Cross Reference Source Fixtures with Fixtures already in the Target Layout. If their are duplicates, throw a message to the User.
+
     local targetLayoutFixturesIndexNode = XmlUtils.getFixturesIndexNode(targetLayout, xmlPaths.fixturesIndex)
     if XmlUtils.isNodeSingular(targetLayoutFixturesIndexNode) then
         XmlUtils.listifySingularNode(targetLayoutFixturesIndexNode)
