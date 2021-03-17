@@ -71,7 +71,17 @@ table.has = function(set, propertyName)
     return set[propertyName] ~= nil
 end
 
+string.compareCaseInsensitive = function(a, b)
+    if a == nil and b == nil then
+        return true
+    end
 
+    if a == nil or b == nil then
+        return a == b
+    end
+
+    return string.lower(a) == string.lower(b)
+end
 
 -- END LUA Standard Library Extensions
 

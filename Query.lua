@@ -11,7 +11,7 @@ local function hitTest(pointX, pointY, selectionRec)
 end
 
 local function matchRec(node, idText)
-    return node._attr ~= nil and node._attr.text == idText
+    return node._attr ~= nil and string.compareCaseInsensitive(node._attr.text, idText)
 end
 
 function Query.findRec(data, xmlRectanglesPath, idText)
@@ -32,7 +32,6 @@ function Query.findRec(data, xmlRectanglesPath, idText)
 
     return nil
 end
-
 
 function Query.getCollidingFixtures(sourceFixtures, targetFixtureSet)
     if sourceFixtures == nil or #sourceFixtures == 0 then
