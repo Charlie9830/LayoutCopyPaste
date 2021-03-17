@@ -8,4 +8,56 @@ function Dialogs.throwFixtureCollisionConfirm()
         ]])
 end
 
+function Dialogs.invalidNumericEntry()
+    gma.gui.msgbox("Invalid Input", "Invalid number entered. Exiting plugin.")
+end
+
+function Dialogs.askForSourceLayoutNumber(previousValue)
+    if DEV == true then
+        return "11"
+    end
+
+    if previousValue == nil then
+        previousValue = ""
+    end
+
+    return gma.textinput("Enter SOURCE Layout number..", previousValue)
+end
+
+function Dialogs.askForTargetLayoutNumber(previousValue)
+    if DEV == true then
+        return "12"
+    end
+
+    if previousValue == nil then
+        previousValue = ""
+    end
+
+    return gma.textinput("Enter DESTINATION Layout number..", previousValue)
+end
+
+function Dialogs.layoutDoesNotExist(layoutNumber)
+    return gma.gui.msgbox("Layout not found", "Sorry, Layout " .. layoutNumber .. " doesn't exist. Exiting Plugin.")
+end
+
+function Dialogs.noCopyRectangle(copyRectangleText)
+    gma.gui.msgbox("No Copy Rectangle",
+        "Could not find a rectangle with text set to \"" .. copyRectangleText .. "\" on source layout.")
+end
+
+function Dialogs.noPasteRectangle(pasteRectangleText)
+    gma.gui.msgbox("No Paste Rectangle", "Could not find a rectangle with text set to \"" .. pasteRectangleText ..
+        "\" on destination layout.")
+end
+
+function Dialogs.nothingToCopy()
+    gma.gui.msgbox("Nothing to Copy. Exiting plugin.")
+end
+
+function Dialogs.PreExecutionPermission(sourceLayoutName, targetLayoutName, itemCount)
+    gma.gui.confirm("Just Checkin'",
+        "About to copy " .. itemCount .. " items from  " .. sourceLayoutName .. " to " .. targetLayoutName ..
+            ".. Press Ok to continue")
+end
+
 return Dialogs

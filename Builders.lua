@@ -23,7 +23,8 @@ function Builders.SourceContent(fixtures, rectangles, texts, cObjects)
         fixtures = fixtures,
         rectangles = rectangles,
         texts = texts,
-        cObjects = cObjects
+        cObjects = cObjects,
+        isEmpty = #fixtures == 0 and #rectangles == 0 and #texts == 0 and #cObjects == 0
     }
 
 end

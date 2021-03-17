@@ -3,6 +3,12 @@ local Mocks = {}
 function Mocks.initGmaMock()
     if gma == nil then
         gma = {}
+        gma.textinput = function(title, previousValue)
+            print("TEXT INPUT PROMPT:   " .. title)
+            if previousValue ~= nil then
+                print("DEFAULT VALUE:   " .. previousValue)
+            end
+        end
         gma.feedback = function(message)
             print("FEEDBACK:  " .. message)
         end
@@ -21,9 +27,37 @@ function Mocks.initGmaMock()
             if varname == "HOSTTYPE" then
                 return 'Development'
             end
+
+            if varname == "lcp_previousSourceLayoutNumber" then
+                return "11"
+            end
+
+            if varname == "lcp_previousTargetLayoutNumber" then
+                return "12"
+            end
+        end
+
+        gma.show.setvar = function(varname, value)
+        end
+
+        gma.show.getobj = {}
+        gma.show.getobj.handle = function(handle)
+            if handle == "Layout 11" or handle == "Layout 12" then
+                return {}
+            end
+        end
+
+        gma.show.getobj.label = function(handle)
+            return "DEV Object Label"
         end
 
         gma.gui = {}
+        gma.gui.msgbox = function(title, message)
+            print("\n")
+            print('-- ' .. title .. ' --')
+            print(message)
+            print("\n")
+        end
         gma.gui.confirm = function(title, message)
             print("\n")
             print('----- ' .. title .. ' -----')

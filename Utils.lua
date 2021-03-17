@@ -46,4 +46,14 @@ function Utils.pruneFixtures(collisionCount, sourceFixtures, collidingFixtureIds
     return returnList
 end
 
+function Utils.validateIntegerInput(input)
+    local asNumber = tonumber(input)
+
+    if asNumber == nil then
+        return false, 0
+    end
+
+    return true, math.floor(asNumber)
+end
+
 return Utils
