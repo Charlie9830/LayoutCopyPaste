@@ -44,7 +44,7 @@ local textsPath = {"MA", "Group", "LayoutData", "Texts", "LayoutElement"}
 local cObjectsPath = {"MA", "Group", "LayoutData", "CObjects", "LayoutCObject"}
 
 -- CONFIG --
-local separator = '\92'
+local separator = '/'
 local maTempPath = gma.show.getvar('TEMPPATH')
 local maRootPath = gma.show.getvar('PATH')
 local sourceLayoutFileName = "lcp_sourcelayout.xml"
