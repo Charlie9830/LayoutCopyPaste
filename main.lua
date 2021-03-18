@@ -13,6 +13,15 @@ local Commands = require("Commands")
 
 Mocks.initGmaMock()
 
+-- USER CONFIG
+local copyRectangleText = "copy" -- The text that the plugin will use to identify the "Copy Rectangle". It's Case Insensitive.
+local pasteRectangleText = "paste" -- The text that the plugin will use to identiy the "Paste Rectangle". It's Case Insensitive.
+-- END USER CONFIG
+
+-- NOTE TO USERS --
+
+
+
 -- Set DEV Mode
 DEV = false
 if gma.show.getvar("HOSTTYPE") == "Development" then
@@ -30,11 +39,6 @@ InspectToFile = function(data)
     end
 end
 
--- USER CONFIG
-local copyRectangleText = "copy"
-local pasteRectangleText = "paste"
--- END USER CONFIG
-
 -- CONFIG
 -- XML Paths
 local fixturesPath = {"MA", "Group", "LayoutData", "SubFixtures", "LayoutSubFix"}
@@ -43,8 +47,7 @@ local rectanglesPath = {"MA", "Group", "LayoutData", "Rectangles", "LayoutElemen
 local textsPath = {"MA", "Group", "LayoutData", "Texts", "LayoutElement"}
 local cObjectsPath = {"MA", "Group", "LayoutData", "CObjects", "LayoutCObject"}
 
--- CONFIG --
-local separator = '/'
+local separator = '\92'
 local maTempPath = gma.show.getvar('TEMPPATH')
 local maRootPath = gma.show.getvar('PATH')
 local sourceLayoutFileName = "lcp_sourcelayout.xml"
