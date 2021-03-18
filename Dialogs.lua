@@ -55,9 +55,13 @@ function Dialogs.nothingToCopy()
 end
 
 function Dialogs.PreExecutionPermission(sourceLayoutName, targetLayoutName, itemCount)
-    gma.gui.confirm("Just Checkin'",
+    if gma.gui.confirm("Just Checkin'",
         "About to copy " .. itemCount .. " items from  " .. sourceLayoutName .. " to " .. targetLayoutName ..
-            ".. Press Ok to continue")
+            ".. Press Ok to continue") then
+        return true
+    else
+        return false
+    end
 end
 
 return Dialogs
