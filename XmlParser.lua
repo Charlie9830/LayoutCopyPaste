@@ -207,106 +207,10 @@ local function parseXmlDeclaration(self, xml, f)
     return tag
 end
 
-local function parseXmlProcessingInstruction(self, xml, f)
-    local tag = {}
-
-    -- XML Processing Instruction (PI)
-    f.match, f.endMatch, f.text = string.find(xml, self._PI, f.pos)
-    if not f.match then 
-        err(self, self._errstr.piErr, f.pos)
-    end 
-    if fexists(self.handler, 'pi') then 
-        -- Parse PI attributes & text
-        tag = parseTag(self, f.text) 
-        local pi = string.sub(f.text, string.len(tag.name)+1)
-        if pi ~= "" then
-            if tag.attrs then
-                tag.attrs._text = pi
-            else
-                tag.attrs = { _text = pi }
-            end
-        end
-        self.handler:pi(tag, f.match, f.endMatch) 
-    end
-
-    return tag
-end
-
-local function parseComment(self, xml, f)
-    f.match, f.endMatch, f.text = string.find(xml, self._COMMENT, f.pos)
-    if not f.match then 
-        err(self, self._errstr.commentErr, f.pos)
-    end 
-
-    if fexists(self.handler, 'comment') then 
-        f.text = parseEntities(self, stripWS(self, f.text))
-        self.handler:comment(f.text, next, f.match, f.endMatch)
-    end
-end
-
-local function _parseDtd(self, xml, pos)
-    -- match,endMatch,root,type,name,uri,internal
-    local dtdPatterns = {self._DTD1, self._DTD2, self._DTD3, self._DTD4, self._DTD5}
-
-    for _, dtd in pairs(dtdPatterns) do
-        local m,e,r,t,n,u,i = string.find(xml, dtd, pos)
-        if m then
-            return m, e, {_root=r, _type=t, _name=n, _uri=u, _internal=i} 
-        end
-    end
-
-    return nil
-end
-
-local function parseDtd(self, xml, f)
-    f.match, f.endMatch, _ = _parseDtd(self, xml, f.pos)
-    if not f.match then 
-        err(self, self._errstr.dtdErr, f.pos)
-    end 
-
-    if fexists(self.handler, 'dtd') then
-        local tag = {name="DOCTYPE", value=string.sub(xml, f.match+10, f.endMatch-1)}
-        self.handler:dtd(tag, f.match, f.endMatch)
-    end
-end
-
-local function parseCdata(self, xml, f)
-    f.match, f.endMatch, f.text = string.find(xml, self._CDATA, f.pos)
-    if not f.match then 
-        err(self, self._errstr.cdataErr, f.pos)
-    end 
-
-    if fexists(self.handler, 'cdata') then
-        self.handler:cdata(f.text, nil, f.match, f.endMatch)
-    end    
-end
-
 --- Parse a Normal tag
 -- Need check for embedded '>' in attribute value and extend
 -- match recursively if necessary eg. <tag attr="123>456"> 
 local function parseNormalTag(self, xml, f)
-    --Check for errors
-    while 1 do
-        --If there isn't an attribute without closing quotes (single or double quotes)
-        --then breaks to follow the normal processing of the tag.
-        --Otherwise, try to find where the quotes close.
-        f.errStart, f.errEnd = string.find(f.tagstr, self._ATTRERR1)        
-
-        if f.errEnd == nil then
-            f.errStart, f.errEnd = string.find(f.tagstr, self._ATTRERR2)
-            if f.errEnd == nil then
-                break
-            end
-        end
-        
-        f.extStart, f.extEnd, f.endt2 = string.find(xml, self._TAGEXT, f.endMatch+1)
-        f.tagstr = f.tagstr .. string.sub(xml, f.endMatch, f.extEnd-1)
-        if not f.match then 
-            err(self, self._errstr.xmlErr, f.pos)
-        end 
-        f.endMatch = f.extEnd
-    end 
-
     -- Extract tag name and attrs
     local tag = parseTag(self, f.tagstr) 
 
@@ -343,14 +247,6 @@ local function parseTagType(self, xml, f)
     -- Test for tag type
     if string.find(string.sub(f.tagstr, 1, 5), "?xml%s") then
         parseXmlDeclaration(self, xml, f)
-    elseif string.sub(f.tagstr, 1, 1) == "?" then
-        parseXmlProcessingInstruction(self, xml, f)
-    elseif string.sub(f.tagstr, 1, 3) == "!--" then
-        parseComment(self, xml, f)
-    elseif string.sub(f.tagstr, 1, 8) == "!DOCTYPE" then
-        parseDtd(self, xml, f)
-    elseif string.sub(f.tagstr, 1, 8) == "![CDATA[" then
-        parseCdata(self, xml, f)
     else
         parseNormalTag(self, xml, f)
     end

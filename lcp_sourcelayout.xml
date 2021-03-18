@@ -1,43 +1,35 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<MA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://schemas.malighting.de/grandma2/xml/MA" xsi:schemaLocation="http://schemas.malighting.de/grandma2/xml/MA http://schemas.malighting.de/grandma2/xml/3.9.60/MA.xsd" major_vers="3" minor_vers="9" stream_vers="60">
-	<Info datetime="2021-03-16T18:26:08" showfile="layoutcopypaste" />
-	<Group index="10" name="Base">
+<MA xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schemas.malighting.de/grandma2/xml/MA" xsi:schemaLocation="http://schemas.malighting.de/grandma2/xml/MA http://schemas.malighting.de/grandma2/xml/3.9.60/MA.xsd" major_vers="3" minor_vers="9" stream_vers="60">
+	<Info datetime="2021-03-18T20:05:49" showfile="jj_standard-a" />
+	<Group index="3" name="Flares">
 		<Subfixtures>
-			<Subfixture fix_id="2001"/>
-			<Subfixture fix_id="2002"/>
+			<Subfixture fix_id="501" />
+			<Subfixture fix_id="502" />
+			<Subfixture fix_id="503" />
 		</Subfixtures>
-
-		<LayoutData index="0" marker_visible="true" background_color="000000" visible_grid_h="1" visible_grid_w="1" snap_grid_h="0.5" snap_grid_w="0.5" default_gauge="Filled &amp; Symbol" subfixture_view_mode="DMX Layer">
-			<CObjects>
-				<LayoutCObject font_size="Small" center_x="3.504" center_y="0.454" size_h="1" size_w="1" background_color="3c3c3c" border_color="5a5a5a" icon="None" show_id="1" show_name="1" show_type="1" function_type="Pool icon" select_group="1">
+		<LayoutData index="0" marker_visible="true" snap_always_active="true" fast_call="true" background_color="000000" visible_grid_h="1" visible_grid_w="0" snap_grid_h="0.5" snap_grid_w="0.5" default_gauge="Filled &amp; Symbol" subfixture_view_mode="DMX Layer">
+			<SubFixtures>
+				<LayoutSubFix center_x="-3" center_y="-1" size_h="1" size_w="1" background_color="00000000" icon="None" show_id="1" show_type="1" function_type="Filled" select_group="1">
 					<image />
-					<CObject name="ON Uni Range 3">
-						<No>13</No>
-						<No>1</No>
-						<No>3</No>
-					</CObject>
-				</LayoutCObject>
-			</CObjects>
-
+					<Subfixture fix_id="501" />
+				</LayoutSubFix>
+				<LayoutSubFix center_x="-1.5" center_y="-1" size_h="1" size_w="1" background_color="00000000" icon="None" show_id="1" show_type="1" function_type="Filled" select_group="1">
+					<image />
+					<Subfixture fix_id="502" />
+				</LayoutSubFix>
+				<LayoutSubFix center_x="0" center_y="-1" size_h="1" size_w="1" background_color="00000000" icon="None" show_id="1" show_type="1" function_type="Filled" select_group="1">
+					<image />
+					<Subfixture fix_id="503" />
+				</LayoutSubFix>
+			</SubFixtures>
 			<Rectangles>
-				<LayoutElement font_size="Small" center_x="1.667" center_y="-0.391" size_h="10" size_w="10" background_color="00000000" icon="None" text="copy" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">
+				<LayoutElement font_size="Small" center_x="1" center_y="1" size_h="5" size_w="5" background_color="00000000" icon="None" text="&lt;Copy id=&quot;4221&quot; text=&quot;copy&quot;/&gt;" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">
+					<image />
+				</LayoutElement>
+				<LayoutElement font_size="Small" center_x="-1.137" center_y="1.508" size_h="10.074" size_w="8.618" background_color="00000000" icon="None" text="copy" show_id="1" show_name="1" show_type="1" show_dimmer_bar="Off" show_dimmer_value="Off" select_group="1">
 					<image />
 				</LayoutElement>
 			</Rectangles>
-
-			<SubFixtures>
-				<LayoutSubFix center_x="0" center_y="0" size_h="1" size_w="1" background_color="00000000" icon="None" show_id="1" show_type="1" function_type="Filled" select_group="1">
-					<image doop="From Source" />
-					<Subfixture fix_id="2001" />
-				</LayoutSubFix>
-				<LayoutSubFix center_x="1" center_y="1" size_h="1" size_w="1" background_color="00000000" icon="None" show_id="1" show_type="1" function_type="Filled" select_group="1">
-					<image />
-					<Subfixture fix_id="2002"/>
-				</LayoutSubFix>
-			</SubFixtures>
-
-
 		</LayoutData>
 	</Group>
 </MA>
