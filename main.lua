@@ -1,3 +1,67 @@
+-- ===================== --
+-- Layout Copy and Paste
+-- ===================== --
+-- Version 1.0
+-- Created by Charlie Hall and Ellie Garnett
+-- https://www.github.com/charlie9830
+-- Last Updated March 2021
+
+-- Source Code available at:
+-- https://github.com/Charlie9830/LayoutCopyPaste
+
+-- DESCRIPTION --
+-- =========== --
+-- This plugin allows users to Copy and Paste regions from one layout to another, this includes all Text, Rectangle, Pool
+-- and Fixture elements. Bitmap copy is not currently implemented.
+
+-- INSTRUCTIONS --
+-- ============ --
+-- [1] Draw a rectangle on your layout around the objects you wish to Copy, set the text property on this rectangle to 'copy'
+-- [2] In the layout you wish to copy the elements into, draw a rectangle and set the text property to 'paste', This size of this 
+-- rectangle does not matter, the plugin will only use its position to place this incoming elements.
+-- [3] Run the plugin by typing "Plugin X" into your command line, where x is the number of the plugin, or by touching the plugin
+-- pool element in the Plugins window.
+-- [4] Enter the number of your source layout (The layout with the 'copy' rectangle)
+-- [5] Enter the number of your target layout (That layout with the 'paste' rectangle)
+-- Your elements will be copied from the 'copy' rectangle to the 'paste' rectangle.
+-- The plugin is very robust, validating all inputs before performing any possibly 'destructive' actions, however if you find that
+-- your layout has been borked, you can 'oops' out of it. 'oops' back to the command "Import Layout at x /path="lcp_outputlayout.xml"...."
+
+-- LICENSES --
+-- ======== --
+-- Layout Copy and Paste
+-- MIT License
+
+-- Copyright (c) 2021 Charlie Hall & Ellie Garnett
+
+-- Permission is hereby granted, free of charge, to any person obtaining a copy
+-- of this software and associated documentation files (the "Software"), to deal
+-- in the Software without restriction, including without limitation the rights
+-- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+-- copies of the Software, and to permit persons to whom the Software is
+-- furnished to do so, subject to the following conditions:
+
+-- The above copyright notice and this permission notice shall be included in all
+-- copies or substantial portions of the Software.
+
+-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+-- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+-- SOFTWARE.
+
+-- xml2lua
+--  This code is freely distributable under the terms of the MIT license
+--
+-- @author Paul Chakravarti (paulc@passtheaardvark.com)
+-- @author Manoel Campos da Silva Filho
+
+-- luabundler
+-- Copyright (c) 2020 Benjamin Dobell
+-- This code is freely distributable under the terms of the MIT license
+
 local Utils = require("Utils")
 local LayoutIO = require("LayoutIO")
 local Query = require("Query")
@@ -9,6 +73,7 @@ local Mocks = require("Mocks")
 local Dialogs = require("Dialogs")
 local Commands = require("Commands")
 
+
 Mocks.initGmaMock()
 
 -- USER CONFIG
@@ -17,6 +82,7 @@ local pasteRectangleText = "paste" -- The text that the plugin will use to ident
 -- END USER CONFIG
 
 -- NOTE TO USERS --
+
 
 -- Set DEV Mode
 DEV = false

@@ -1,25 +1,3 @@
---- @module Class providing the actual XML parser.
---  Available options are:
---      * stripWS   
---        Strip non-significant whitespace (leading/trailing) 
---        and do not generate events for empty text elements
---  
---      * expandEntities 
---        Expand entities (standard entities + single char 
---        numeric entities only currently - could be extended 
---        at runtime if suitable DTD parser added elements
---        to table (see obj._ENTITIES). May also be possible
---        to expand multibyre entities for UTF-8 only
---  
---      * errorHandler
---        Custom error handler function 
---
---  NOTE: Boolean options must be set to 'nil' not '0'
-
----Converts the decimal code of a character to its corresponding char
---if it's a graphical char, otherwise, returns the HTML ISO code
---for that decimal value in the format &#code
---@param code the decimal value to convert to its respective character
 local function decimalToHtmlChar(code)
     local num = tonumber(code)
     if num >= 0 and num < 256 then
@@ -29,10 +7,6 @@ local function decimalToHtmlChar(code)
     return "&#"..code..";"
 end
 
----Converts the hexadecimal code of a character to its corresponding char
---if it's a graphical char, otherwise, returns the HTML ISO code
---for that hexadecimal value in the format &#xCode
---@param code the hexadecimal value to convert to its respective character
 local function hexadecimalToHtmlChar(code)
     local num = tonumber(code, 16)
     if num >= 0 and num < 256 then
@@ -93,13 +67,6 @@ local XmlParser = {
     },
 }
 
---- Instantiates a XmlParser object.
---@param _handler Handler module to be used to convert the XML string
---               to another formats. See the available handlers at the handler directory.
---               Usually you get an instance to a handler module using, for instance:
---               local handler = require("xmlhandler/tree").
---@param _options Options for this XmlParser instance.
---@see XmlParser.options
 function XmlParser.new(_handler, _options)
     local obj = {
         handler = _handler,
@@ -112,10 +79,7 @@ function XmlParser.new(_handler, _options)
     return obj;
 end
 
----Checks if a function/field exists in a table or in its metatable
---@param table the table to check if it has a given function
---@param elementName the name of the function/field to check if exists
---@return true if the function/field exists, false otherwise
+
 local function fexists(table, elementName)
     if table == nil then
         return false
@@ -153,11 +117,6 @@ local function parseEntities(self, s)
     return s
 end
 
---- Parses a string representing a tag.
---@param s String containing tag text
---@return a {name, attrs} table
--- where name is the name of the tag and attrs 
--- is a table containing the atributtes of the tag
 local function parseTag(self, s)
     local tag = {
             name = string.gsub(s, self._TAG, '%1'),
@@ -207,9 +166,6 @@ local function parseXmlDeclaration(self, xml, f)
     return tag
 end
 
---- Parse a Normal tag
--- Need check for embedded '>' in attribute value and extend
--- match recursively if necessary eg. <tag attr="123>456"> 
 local function parseNormalTag(self, xml, f)
     -- Extract tag name and attrs
     local tag = parseTag(self, f.tagstr) 
@@ -252,8 +208,6 @@ local function parseTagType(self, xml, f)
     end
 end
 
---- Get next tag (first pass - fix exceptions below).
---@return true if the next tag could be got, false otherwise
 local function getNextTag(self, xml, f)
   f.match, f.endMatch, f.text, f.endt1, f.tagstr, f.endt2 = string.find(xml, self._XML, f.pos)
   if not f.match then 
@@ -277,10 +231,6 @@ local function getNextTag(self, xml, f)
   return f.endMatch ~= nil
 end
 
---Main function which starts the XML parsing process
---@param xml the XML string to parse
---@param parseAttributes indicates if tag attributes should be parsed or not. 
---       If omitted, the default value is true.
 function XmlParser:parse(xml, parseAttributes, progressCallback)
     if type(self) ~= "table" or getmetatable(self) ~= XmlParser then
         error("You must call xmlparser:parse(parameters) instead of xmlparser.parse(parameters)")
