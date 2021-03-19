@@ -1,2 +1,7 @@
 dist.lua
 benchmarkoutput.txt
+
+# Outputs
+lcp_outputlayout.xml
+lcp_sourcelayout.xml
+lcp_targetlayout.xml
