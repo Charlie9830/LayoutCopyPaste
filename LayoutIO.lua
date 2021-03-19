@@ -6,8 +6,22 @@ local LayoutIO = {}
 
 local xmlDecl = "<?xml version=\"1.0\" encoding=\"utf-8\"?> \n"
 
+local function fileExists(path)
+    local file = io.open(path)
+
+    if file == nil then
+        return false
+    else
+        io.close()
+        return true
+    end
+end
+
 function LayoutIO.read(path, parser, handler, progressHandle)
-    -- TODO: Process Hangs when writing to a File that doesnt exist. No Exceptions, just Stalls
+    if fileExists(path) == false then
+        gma.gui.progress.stop(progressHandle)
+        return nil
+    end
     local file = io.open(path, "r")
     io.input(file)
 
@@ -30,7 +44,6 @@ function LayoutIO.read(path, parser, handler, progressHandle)
         parseCount = parseCount + 1
     end
 
-    
     parser:parse(Utils.trim(xml), nil, progressCallback)
 
     gma.gui.progress.stop(progressHandle)
