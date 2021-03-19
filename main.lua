@@ -223,7 +223,7 @@ local function Main()
     if sourceLayout == nil then
         gma.gui.progress.stop(sourceLayoutReadProgressHandle)
         Dialogs.fatalError(
-            "An error occured whilst reading the source layout xml. Exiting plugin, No show data has been changed." ..
+            "An error occured whilst reading the source layout xml. Exiting plugin, No show data has been changed. \n" ..
                 " There may be more information about this error in the System Monitor window.")
         return
     end
@@ -282,13 +282,13 @@ local function Main()
 
     if targetLayout == nil then
         gma.gui.progress.stop(targetLayoutReadProgressHandle)
-        Dialogs.fatalError("An error occured whilst reading the target layout xml. Exiting plugin. " ..
+        Dialogs.fatalError("An error occured whilst reading the target layout xml. Exiting plugin. \n " ..
                                " There may be more information about this error in the System Monitor window. ")
         return
     end
 
     -- Find the Target Pasteing Rectangle
-    gma.feedback("Querying for Paste rectangle")
+    gma.echo("Querying for Paste rectangle")
     local pasteTargetRec = Query.findRec(targetLayout, xmlPaths.rectangles, pasteRectangleText)
 
     if pasteTargetRec == nil then
@@ -364,14 +364,14 @@ local function Main()
             gma.echo(err)
             gma.echo("An exception has been thrown whilst writing the output layout to disk")
             Dialogs.fatalError(
-                "An error occured whilst writing the output.xml. Your Layouts were unaffected. Exiting plugin." ..
+                "An error occured whilst writing the output.xml. Your Layouts were unaffected. Exiting plugin. \n" ..
                     " There may be more information about this error in the System Monitor window.")
             return
         end
     end
 
     -- Command MA to import the file we just output.
-    gma.feedback("Politely asking MA to import our marged layout")
+    gma.echo("Politely asking MA to import our marged layout")
     Commands.sendImportCommand(targetLayoutNumber, outputLayoutFileName)
 
     gma.echo("Saving variables for next run.")
