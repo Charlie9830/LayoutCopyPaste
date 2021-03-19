@@ -6,7 +6,6 @@ local Merge = require("Merge")
 local handler = require("xmlhandler.tree")
 local xml2lua = require("xml2lua")
 local Mocks = require("Mocks")
-local inspect = require("inspect")
 local XmlUtils = require("XmlUtils")
 local Dialogs = require("Dialogs")
 local Commands = require("Commands")
@@ -25,17 +24,6 @@ local pasteRectangleText = "paste" -- The text that the plugin will use to ident
 DEV = false
 if gma.show.getvar("HOSTTYPE") == "Development" then
     DEV = true
-end
-
-InspectToFile = function(data)
-    if DEV == true then
-        local file = io.open('debugoutput.txt', "w+")
-        io.output(file)
-
-        io.write(inspect(data))
-
-        io.close()
-    end
 end
 
 -- CONFIG

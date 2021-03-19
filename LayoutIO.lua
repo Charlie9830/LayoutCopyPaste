@@ -1,6 +1,5 @@
 local Utils = require "Utils"
 local xml2lua = require("xml2lua")
-local inspect = require("inspect")
 
 local LayoutIO = {}
 

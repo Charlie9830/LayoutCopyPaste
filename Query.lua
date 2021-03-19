@@ -1,4 +1,3 @@
-local inspect = require("inspect")
 local Builders = require("Builders")
 local XmlUtils = require("XmlUtils")
 local Query = {}
