@@ -32,6 +32,8 @@ function LayoutIO.read(path, parser, handler, progressHandle)
     end
     io.close(file)
 
+    local crash = "crash "..nil
+
     gma.gui.progress.setrange(progressHandle, 0, lineCount)
 
     local parseCount = 0

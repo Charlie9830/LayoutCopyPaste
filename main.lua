@@ -89,18 +89,20 @@ local sourceLayoutReadProgressHandle
 local targetLayoutReadProgressHandle
 
 local function Main()
-    gma.feedback("Running Layout Copy and Paste")
-
+    gma.feedback("Starting Layout Copy and Paste Plugin")
+    gma.echo("Starting Layout Copy and Paste Plugin")
     local isValid, sourceLayoutNumber = Utils.validateIntegerInput(
                                             Dialogs.askForSourceLayoutNumber(
                                                 gma.show.getvar(previousSourceLayoutVarName)))
     if isValid == false then
         Dialogs.invalidNumericEntry()
+        gma.echo("Invalid numeric entry, exiting plugin")
         return
     end
 
     if gma.show.getobj.handle("Layout " .. sourceLayoutNumber) == nil then
         Dialogs.layoutDoesNotExist(sourceLayoutNumber)
+        gma.echo("Layout does not exist, exiting plugin ")
         return
     end
 
@@ -109,65 +111,73 @@ local function Main()
                                                 gma.show.getvar(previousTargetLayoutVarName)))
     if isValid == false then
         Dialogs.invalidNumericEntry()
+        gma.echo("Invalid numeric entry, exiting plugin")
         return
     end
 
     if gma.show.getobj.handle("Layout " .. targetLayoutNumber) == nil then
         Dialogs.layoutDoesNotExist(targetLayoutNumber)
+        gma.echo("Layout does not exist, exiting plugin ")
         return
     end
 
-    gma.feedback("Exporting Source Layout")
+    gma.echo("Commanding MA to export source layout to " .. maTempPath)
     Commands.sendExportCommand(sourceLayoutNumber, sourceLayoutFileName, maTempPath)
-    gma.feedback("Exporting Target Layout")
+
+    gma.echo("Commanding MA to export target layout to " .. maTempPath)
     Commands.sendExportCommand(targetLayoutNumber, targetLayoutFileName, maTempPath)
 
-    gma.feedback("Starting XML Processing")
     local xmlPaths = Builders.XmlPaths(fixturesPath, fixturesIndexPath, rectanglesPath, textsPath, cObjectsPath)
 
     -- Init Source Layout XML Parser and Handler (1 Parser and Handler Combo per XML File)
+    gma.echo("Instantiating source layout XML handler")
     local sourceHandler = handler:new()
     local sourceParser = xml2lua.parser(sourceHandler)
 
     -- Read in Source Layout XML
-    gma.feedback("Reading Source Layout")
+    gma.echo("Reading source layout from disk")
     sourceLayoutReadProgressHandle = gma.gui.progress.start("Processing Source Layout")
 
     local sourceLayout
-    if pcall(function()
+    local pcallResult, err = pcall(function()
         sourceLayout = LayoutIO.read(sourceLayoutFilePath, sourceParser, sourceHandler, sourceLayoutReadProgressHandle)
-    end) then
+    end)
+    if pcallResult then
         -- No Errors
     else
         -- An Error Occured.
         gma.gui.progress.stop(sourceLayoutReadProgressHandle)
-        Dialogs.fatalError(
-            "An error occured when reading the source layout xml. Exiting plugin, No show data has been changed")
+        gma.echo(err)
+        gma.echo("Exception thrown while reading source layout, exiting plugin.")
+
+        -- Set sourceLayout to nil so error handling below will catch and inform user.
         sourceLayout = nil
     end
 
     if sourceLayout == nil then
         gma.gui.progress.stop(sourceLayoutReadProgressHandle)
         Dialogs.fatalError(
-            "An error occured when reading the source layout xml. Exiting plugin, NO show data has been changed.")
+            "An error occured whilst reading the source layout xml. Exiting plugin, No show data has been changed." ..
+                " There may be more information about this error in the System Monitor window.")
         return
     end
 
-    gma.feedback("Source Layout Read Complete")
+    gma.echo("Source layout read and parsing complete")
 
     -- Find the Copy Selection Rectangle
-    gma.feedback("Finding Copy Rectangle")
+    gma.echo("Querying for copy rectangle")
     local copySourceRec = Query.findRec(sourceLayout, rectanglesPath, copyRectangleText)
 
     if copySourceRec == nil then
         Dialogs.noCopyRectangle(copyRectangleText)
+        gma.echo("No copy rectangle found, exiting plugin")
         return
     end
 
-    gma.feedback("Copy Rectangle Found")
+    gma.echo("Copy rectangle located")
 
     -- Query for elements inside the Copy Selection Rectangle. Build into sourceContent Container.
-    gma.feedback("Finding Source Elements")
+    gma.echo("Hit testing source elements")
     local sourceContent =
         Builders.SourceContent(Query.getElements(sourceLayout, xmlPaths.fixtures, copySourceRec, ""), -- Fixtures
         Query.getElements(sourceLayout, xmlPaths.rectangles, copySourceRec, copyRectangleText), -- Rectangles
@@ -177,48 +187,53 @@ local function Main()
 
     if sourceContent.isEmpty == true then
         Dialogs.nothingToCopy()
+        gma.echo("Hit testing copy rectangle returned 0 results, exiting plugin")
         return
     end
 
-    gma.feedback("Source Elements Found")
-
+    gma.echo("Instantiating target layout XML handler")
     -- Init Target Layout XML Parser and Handler (1 Parser and Handler Combo per XML File)
     local targetHandler = handler:new()
     local targetParser = xml2lua.parser(targetHandler)
 
     -- Read in Source Layout XMl
-    gma.feedback("Reading Target Layout")
+    gma.echo("Reading Target layout from disk")
     targetLayoutReadProgressHandle = gma.gui.progress.start("Processing Target Layout")
 
     local targetLayout
-    if pcall(function()
+    local pcallresult, err = pcall(function()
         targetLayout = LayoutIO.read(targetLayoutFilePath, targetParser, targetHandler, targetLayoutReadProgressHandle)
-    end) then
+    end)
+    if pcallresult then
         -- No Errors
     else
-        -- An Error has Occured
+        -- An Error has occured
         gma.gui.progress.stop(targetLayoutReadProgressHandle)
+        gma.echo(err)
+        gma.echo("An exception was thrown whilst reading the target layout")
         targetLayout = nil
     end
 
     if targetLayout == nil then
         gma.gui.progress.stop(targetLayoutReadProgressHandle)
-        Dialogs.fatalError("An error occured when reading the target layout xml. Exiting plugin.")
+        Dialogs.fatalError("An error occured whilst reading the target layout xml. Exiting plugin. " ..
+                               " There may be more information about this error in the System Monitor window. ")
         return
     end
 
     -- Find the Target Pasteing Rectangle
-    gma.feedback("Finding Paste Rectangle")
+    gma.feedback("Querying for Paste rectangle")
     local pasteTargetRec = Query.findRec(targetLayout, xmlPaths.rectangles, pasteRectangleText)
 
     if pasteTargetRec == nil then
         Dialogs.noPasteRectangle(pasteRectangleText)
+        gma.echo("Could not locate Paste rectangle, exiting plugin")
         return
     end
 
-    gma.feedback("Paste Rectangle Found")
+    gma.echo("Paste rectangle located")
 
-    gma.feedback("Peeking at Target Fixture index")
+    gma.echo("Peeking at target layout's Fixture index")
     -- Validate that we arent going to cause Fixture Collisions in the Target Layout.
     local targetLayoutFixtureIds = Query.peekFixtureIndex(targetLayout, xmlPaths.fixturesIndex)
 
@@ -226,15 +241,17 @@ local function Main()
                                                     targetLayoutFixtureIds)
 
     if collisionCount > 0 and Dialogs.throwFixtureCollisionConfirm() == false then
+        gma.echo("User has canceled process, exiting plugin")
         return
     end
 
-    gma.feedback("Pruning Colliding Fixtures")
+    gma.echo("Pruning colliding fixtures (if any)")
     -- Prune Colliding Fixtures (if any)
     sourceContent.fixtures = Utils.pruneFixtures(collisionCount, sourceContent.fixtures, collidingFixtureIds)
 
-    gma.feedback("Fixture Prune Complete")
+    gma.echo("Fixture prune complete")
 
+    gma.echo("Preparing final execution confirmation dialog")
     local sourceLayoutHandle = gma.show.getobj.handle("Layout " .. sourceLayoutNumber)
     local sourceLayoutName = gma.show.getobj.label(sourceLayoutHandle)
     if sourceLayoutName == nil then
@@ -251,21 +268,24 @@ local function Main()
                               #sourceContent.texts
 
     if Dialogs.PreExecutionPermission(sourceLayoutName, targetLayoutName, copyItemCount) == false then
+        gma.echo("User has not granted pre execution permission, exiting plugin")
         return
     end
 
     -- Merge the XML files into an Output file.
-    gma.feedback("Executing XML Layout Merge")
+    gma.echo("Executing layout merge")
 
     -- Merge Non Fixture Items.
+    gma.echo("Merging non fixture items")
     local xOffset, yOffset = Merge.calculatePosOffset(copySourceRec, pasteTargetRec)
     local output = Merge.executeNonFixtures(sourceContent, targetLayout, xmlPaths, xOffset, yOffset)
 
     -- Merge Fixtures
+    gma.echo("Merging fixtures")
     output = Merge.executeFixtures(sourceContent.fixtures, output, xmlPaths, xOffset, yOffset)
 
     -- Write to Output storage
-    gma.feedback("Writing Merged Layout to output File")
+    gma.echo("Writing merged layout to disk")
 
     if DEV == true then
         LayoutIO.write(outputLayoutFileName, output)
@@ -275,19 +295,25 @@ local function Main()
             -- No Errors Caught
         else
             -- Error whilst writing to output File. Bail out to save us from attempting to import a corrupted or incomplete Layout.
+            gma.echo(err)
+            gma.echo("An exception has been thrown whilst writing the output layout to disk")
             Dialogs.fatalError(
-                "An error occured whilst writing the output.xml. Your Layouts were unaffected. Exiting plugin.")
+                "An error occured whilst writing the output.xml. Your Layouts were unaffected. Exiting plugin." ..
+                    " There may be more information about this error in the System Monitor window.")
             return
         end
     end
 
     -- Command MA to import the file we just output.
-    gma.feedback("Asking MA to Import Output File")
+    gma.feedback("Politely asking MA to import our marged layout")
     Commands.sendImportCommand(targetLayoutNumber, outputLayoutFileName)
 
+    gma.echo("Saving variables for next run.")
     gma.show.setvar(previousSourceLayoutVarName, tostring(sourceLayoutNumber))
     gma.show.setvar(previousTargetLayoutVarName, tostring(targetLayoutNumber))
-    gma.feedback("Complete")
+
+    gma.echo("Layout Copy and Paste completed sucessfully")
+    gma.feedback("Layout Copy and Paste completed sucessfully")
 
     return
 end
@@ -297,5 +323,3 @@ if DEV == true then
 else
     return Main
 end
-
-return Main

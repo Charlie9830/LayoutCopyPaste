@@ -12,6 +12,9 @@ function Mocks.initGmaMock()
         gma.feedback = function(message)
             print("FEEDBACK:  " .. message)
         end
+        gma.echo = function(message)
+            print("ECHO:   "..message)
+        end
         gma.cmd = function(cmd)
             print("COMMAND:   " .. cmd)
         end
