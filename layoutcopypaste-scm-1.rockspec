@@ -1,5 +1,5 @@
 package = "LayoutCopyPaste"
-version = "scm-1"
+version = "1"
 source = {
    url = "*** please add URL for source tarball, zip or repository here ***"
 }
