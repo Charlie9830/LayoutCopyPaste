@@ -1,6 +1,5 @@
 local XmlUtils = require("XmlUtils")
 local Builders = require "Builders"
-local Query = require "Query"
 
 local Merge = {}
 

@@ -6,7 +6,6 @@ local Merge = require("Merge")
 local handler = require("xmlhandler.tree")
 local xml2lua = require("xml2lua")
 local Mocks = require("Mocks")
-local XmlUtils = require("XmlUtils")
 local Dialogs = require("Dialogs")
 local Commands = require("Commands")
 
