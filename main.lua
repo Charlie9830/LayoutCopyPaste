@@ -20,8 +20,6 @@ local pasteRectangleText = "paste" -- The text that the plugin will use to ident
 
 -- NOTE TO USERS --
 
-
-
 -- Set DEV Mode
 DEV = false
 if gma.show.getvar("HOSTTYPE") == "Development" then
@@ -144,10 +142,23 @@ local function Main()
     -- Read in Source Layout XML
     gma.feedback("Reading Source Layout")
     sourceLayoutReadProgressHandle = gma.gui.progress.start("Processing Source Layout")
-    local sourceLayout = LayoutIO.read(sourceLayoutFilePath, sourceParser, sourceHandler, sourceLayoutReadProgressHandle)
+
+    local sourceLayout
+    if pcall(function()
+        sourceLayout = LayoutIO.read(sourceLayoutFilePath, sourceParser, sourceHandler, sourceLayoutReadProgressHandle)
+    end) then
+        -- No Errors
+    else
+        -- An Error Occured.
+        gma.gui.progress.stop(sourceLayoutReadProgressHandle)
+        Dialogs.fatalError(
+            "An error occured when reading the source layout xml. Exiting plugin, No show data has been changed")
+        return
+    end
 
     if sourceLayout == nil then
-        Dialogs.fatalError("An error occured when reading the source layout xml. Exiting plugin.")
+        Dialogs.fatalError(
+            "An error occured when reading the source layout xml. Exiting plugin, NO show data has been changed.")
         return
     end
 
@@ -187,7 +198,19 @@ local function Main()
     -- Read in Source Layout XMl
     gma.feedback("Reading Target Layout")
     targetLayoutReadProgressHandle = gma.gui.progress.start("Processing Target Layout")
-    local targetLayout = LayoutIO.read(targetLayoutFilePath, targetParser, targetHandler, targetLayoutReadProgressHandle)
+
+    local targetLayout
+    if pcall(function()
+        targetLayout = LayoutIO.read(targetLayoutFilePath, targetParser, targetHandler, targetLayoutReadProgressHandle)
+    end) then
+        -- No Errors
+    else
+        -- An Error has Occured
+        gma.gui.progress.stop(targetLayoutReadProgressHandle)
+        Dialogs.fatalError(
+            "An error occured when reading the target layout xml. Exiting plugin, No show data has been changed")
+        return
+    end
 
     if targetLayout == nil then
         Dialogs.fatalError("An error occured when reading the target layout xml. Exiting plugin.")
@@ -274,16 +297,14 @@ local function Main()
     gma.show.setvar(previousSourceLayoutVarName, tostring(sourceLayoutNumber))
     gma.show.setvar(previousTargetLayoutVarName, tostring(targetLayoutNumber))
     gma.feedback("Complete")
-end
 
-local function Cleanup() 
-    gma.gui.progress.stop(sourceLayoutReadProgressHandle)
-    gma.gui.progress.stop(targetLayoutReadProgressHandle)
+    return
 end
 
 if DEV == true then
     Main()
-    Cleanup()
 else
-    return Main, Cleanup
+    return Main
 end
+
+return Main

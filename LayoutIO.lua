@@ -30,6 +30,7 @@ function LayoutIO.read(path, parser, handler, progressHandle)
         parseCount = parseCount + 1
     end
 
+    
     parser:parse(Utils.trim(xml), nil, progressCallback)
 
     gma.gui.progress.stop(progressHandle)

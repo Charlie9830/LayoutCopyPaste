@@ -64,4 +64,8 @@ function Dialogs.PreExecutionPermission(sourceLayoutName, targetLayoutName, item
     end
 end
 
+function Dialogs.fatalError(message)
+    gma.gui.msgbox('Error', message)
+end
+
 return Dialogs
