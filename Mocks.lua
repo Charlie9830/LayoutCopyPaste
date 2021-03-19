@@ -66,6 +66,20 @@ function Mocks.initGmaMock()
 
             return true;
         end
+
+        gma.gui.progress = {}
+        gma.gui.progress.start = function(title) 
+            return math.floor(math.random() * 100)
+        end
+
+        gma.gui.progress.setrange = function(progressHandle, min, max)
+        end
+
+        gma.gui.progress.set = function(progressHandle, value)
+        end
+        
+        gma.gui.progress.stop = function(progressHandle) 
+        end
     end
 end
 

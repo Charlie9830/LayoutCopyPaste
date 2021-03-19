@@ -281,7 +281,7 @@ end
 --@param xml the XML string to parse
 --@param parseAttributes indicates if tag attributes should be parsed or not. 
 --       If omitted, the default value is true.
-function XmlParser:parse(xml, parseAttributes)
+function XmlParser:parse(xml, parseAttributes, progressCallback)
     if type(self) ~= "table" or getmetatable(self) ~= XmlParser then
         error("You must call xmlparser:parse(parameters) instead of xmlparser.parse(parameters)")
     end
@@ -307,6 +307,7 @@ function XmlParser:parse(xml, parseAttributes)
     }
 
     while f.match do
+        progressCallback()
         if not getNextTag(self, xml, f) then
             break
         end

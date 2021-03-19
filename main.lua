@@ -96,9 +96,9 @@ end
 
 -- END LUA Standard Library Extensions
 
-local function throwError(message)
-    gma.feedback(message)
-end
+-- GMA Progress Handles --
+local sourceLayoutReadProgressHandle
+local targetLayoutReadProgressHandle
 
 local function Main()
     gma.feedback("Running Layout Copy and Paste")
@@ -143,14 +143,18 @@ local function Main()
 
     -- Read in Source Layout XML
     gma.feedback("Reading Source Layout")
-    local sourceLayout = LayoutIO.read(sourceLayoutFilePath, sourceParser, sourceHandler)
+    sourceLayoutReadProgressHandle = gma.gui.progress.start("Processing Source Layout")
+    local sourceLayout = LayoutIO.read(sourceLayoutFilePath, sourceParser, sourceHandler, sourceLayoutReadProgressHandle)
 
     if sourceLayout == nil then
         Dialogs.fatalError("An error occured when reading the source layout xml. Exiting plugin.")
         return
     end
 
+    gma.feedback("Source Layout Read Complete")
+
     -- Find the Copy Selection Rectangle
+    gma.feedback("Finding Copy Rectangle")
     local copySourceRec = Query.findRec(sourceLayout, rectanglesPath, copyRectangleText)
 
     if copySourceRec == nil then
@@ -158,7 +162,10 @@ local function Main()
         return
     end
 
+    gma.feedback("Copy Rectangle Found")
+
     -- Query for elements inside the Copy Selection Rectangle. Build into sourceContent Container.
+    gma.feedback("Finding Source Elements")
     local sourceContent =
         Builders.SourceContent(Query.getElements(sourceLayout, xmlPaths.fixtures, copySourceRec, ""), -- Fixtures
         Query.getElements(sourceLayout, xmlPaths.rectangles, copySourceRec, copyRectangleText), -- Rectangles
@@ -171,13 +178,16 @@ local function Main()
         return
     end
 
+    gma.feedback("Source Elements Found")
+
     -- Init Target Layout XML Parser and Handler (1 Parser and Handler Combo per XML File)
     local targetHandler = handler:new()
     local targetParser = xml2lua.parser(targetHandler)
 
     -- Read in Source Layout XMl
     gma.feedback("Reading Target Layout")
-    local targetLayout = LayoutIO.read(targetLayoutFilePath, targetParser, targetHandler)
+    targetLayoutReadProgressHandle = gma.gui.progress.start("Processing Target Layout")
+    local targetLayout = LayoutIO.read(targetLayoutFilePath, targetParser, targetHandler, targetLayoutReadProgressHandle)
 
     if targetLayout == nil then
         Dialogs.fatalError("An error occured when reading the target layout xml. Exiting plugin.")
@@ -185,6 +195,7 @@ local function Main()
     end
 
     -- Find the Target Pasteing Rectangle
+    gma.feedback("Finding Paste Rectangle")
     local pasteTargetRec = Query.findRec(targetLayout, xmlPaths.rectangles, pasteRectangleText)
 
     if pasteTargetRec == nil then
@@ -192,6 +203,9 @@ local function Main()
         return
     end
 
+    gma.feedback("Paste Rectangle Found")
+
+    gma.feedback("Peeking at Target Fixture index")
     -- Validate that we arent going to cause Fixture Collisions in the Target Layout.
     local targetLayoutFixtureIds = Query.peekFixtureIndex(targetLayout, xmlPaths.fixturesIndex)
 
@@ -202,8 +216,11 @@ local function Main()
         return
     end
 
+    gma.feedback("Pruning Colliding Fixtures")
     -- Prune Colliding Fixtures (if any)
     sourceContent.fixtures = Utils.pruneFixtures(collisionCount, sourceContent.fixtures, collidingFixtureIds)
+
+    gma.feedback("Fixture Prune Complete")
 
     local sourceLayoutHandle = gma.show.getobj.handle("Layout " .. sourceLayoutNumber)
     local sourceLayoutName = gma.show.getobj.label(sourceLayoutHandle)
@@ -259,8 +276,14 @@ local function Main()
     gma.feedback("Complete")
 end
 
+local function Cleanup() 
+    gma.gui.progress.stop(sourceLayoutReadProgressHandle)
+    gma.gui.progress.stop(targetLayoutReadProgressHandle)
+end
+
 if DEV == true then
     Main()
+    Cleanup()
 else
-    return Main
+    return Main, Cleanup
 end
