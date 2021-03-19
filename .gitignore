@@ -5,3 +5,5 @@ benchmarkoutput.txt
 lcp_outputlayout.xml
 lcp_sourcelayout.xml
 lcp_targetlayout.xml
+
+artifacts/
