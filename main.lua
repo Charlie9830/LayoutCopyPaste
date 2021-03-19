@@ -153,7 +153,7 @@ local function Main()
         gma.gui.progress.stop(sourceLayoutReadProgressHandle)
         Dialogs.fatalError(
             "An error occured when reading the source layout xml. Exiting plugin, No show data has been changed")
-        return
+        sourceLayout = nil
     end
 
     if sourceLayout == nil then
@@ -207,9 +207,7 @@ local function Main()
     else
         -- An Error has Occured
         gma.gui.progress.stop(targetLayoutReadProgressHandle)
-        Dialogs.fatalError(
-            "An error occured when reading the target layout xml. Exiting plugin, No show data has been changed")
-        return
+        targetLayout = nil
     end
 
     if targetLayout == nil then
