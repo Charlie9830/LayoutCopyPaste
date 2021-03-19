@@ -11,7 +11,6 @@ local Commands = require("Commands")
 
 Mocks.initGmaMock()
 
-
 -- USER CONFIG
 local copyRectangleText = "copy" -- The text that the plugin will use to identify the "Copy Rectangle". It's Case Insensitive.
 local pasteRectangleText = "paste" -- The text that the plugin will use to identiy the "Paste Rectangle". It's Case Insensitive.
@@ -33,8 +32,7 @@ local rectanglesPath = {"MA", "Group", "LayoutData", "Rectangles", "LayoutElemen
 local textsPath = {"MA", "Group", "LayoutData", "Texts", "LayoutElement"}
 local cObjectsPath = {"MA", "Group", "LayoutData", "CObjects", "LayoutCObject"}
 
-
-local separator = '/' 
+local separator = '/'
 
 local maTempPath = gma.show.getvar('TEMPPATH')
 local maRootPath = gma.show.getvar('PATH')
@@ -52,7 +50,9 @@ local targetLayoutFilePath = maTempPath .. separator .. targetLayoutFileName
 if DEV == true then
     targetLayoutFilePath = targetLayoutFileName
 end
-local outputLayoutFilePath = maRootPath .. separator .. 'importexport' -- MA recoils at the idea of importing a layout from any other folder except it's default importexport folder.
+local outputLayoutFilePath = maRootPath .. separator .. 'importexport' .. separator ..
+                                 outputLayoutFileName -- MA recoils at the idea of importing a layout from any other folder except it's default importexport folder.
+    
 if DEV == true then
     outputLayoutFilePath = outputLayoutFileName
 end
@@ -268,9 +268,10 @@ local function Main()
     gma.feedback("Writing Merged Layout to output File")
 
     if DEV == true then
-        LayoutIO.write(outputLayoutFilePath, output)
+        LayoutIO.write(outputLayoutFileName, output)
     else
-        if pcall(LayoutIO.write, outputLayoutFilePath .. separator .. outputLayoutFileName, output) then
+        local pcallResult, err = pcall(LayoutIO.write, outputLayoutFilePath, output)
+        if pcallResult then
             -- No Errors Caught
         else
             -- Error whilst writing to output File. Bail out to save us from attempting to import a corrupted or incomplete Layout.
