@@ -44,6 +44,9 @@ For this plugin to work correctly, it calls "SelectDrive 1" each time it is run.
 selected. Pressing 'Backup Backup' will now direct saves to the internal drive instead of your Flash Drive until you reset it back
 in the Backup menu.
 
+### Pre Compiled Download
+Download version1.lua from [HERE](https://github.com/Charlie9830/LayoutCopyPaste/releases)
+
 ### Development Instructions
 #### Dependencies
 - xml2lua (Modified already packaged with source code)
