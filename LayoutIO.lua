@@ -17,7 +17,6 @@ end
 
 function LayoutIO.read(path, parser, handler, progressHandle)
     if fileExists(path) == false then
-        gma.feedback("Doesn't Exist")
         gma.gui.progress.stop(progressHandle)
         return nil
     end
@@ -51,7 +50,6 @@ function LayoutIO.read(path, parser, handler, progressHandle)
 end
 
 function LayoutIO.write(path, data)
-    gma.feedback(path)
     local file = io.open(path, "w+")
     io.output(file)
 

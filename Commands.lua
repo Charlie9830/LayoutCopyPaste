@@ -9,4 +9,8 @@ function Commands.sendImportCommand(layoutNumber, fileName)
     gma.cmd("Import " .. Quote .. fileName .. Quote .. " At Layout " .. layoutNumber.." /o /nc")
 end
 
+function Commands.setDriveToInternal()
+    local result = gma.cmd("SelectDrive 1")
+    gma.feedback(result)
+end
 return Commands

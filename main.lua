@@ -5,15 +5,12 @@
 -- Created by Charlie Hall and Ellie Garnett
 -- https://www.github.com/charlie9830
 -- Last Updated March 2021
-
 -- Source Code available at:
 -- https://github.com/Charlie9830/LayoutCopyPaste
-
 -- DESCRIPTION --
 -- =========== --
 -- This plugin allows users to Copy and Paste regions from one layout to another, this includes all Text, Rectangle, Pool
 -- and Fixture elements. Bitmap copy is not currently implemented.
-
 -- INSTRUCTIONS --
 -- ============ --
 -- [1] Draw a rectangle on your layout around the objects you wish to Copy, set the text property on this rectangle to 'copy'
@@ -26,24 +23,19 @@
 -- Your elements will be copied from the 'copy' rectangle to the 'paste' rectangle.
 -- The plugin is very robust, validating all inputs before performing any possibly 'destructive' actions, however if you find that
 -- your layout has been borked, you can 'oops' out of it. 'oops' back to the command "Import Layout at x /path="lcp_outputlayout.xml"...."
-
 -- LICENSES --
 -- ======== --
 -- Layout Copy and Paste
 -- MIT License
-
 -- Copyright (c) 2021 Charlie Hall & Ellie Garnett
-
 -- Permission is hereby granted, free of charge, to any person obtaining a copy
 -- of this software and associated documentation files (the "Software"), to deal
 -- in the Software without restriction, including without limitation the rights
 -- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 -- copies of the Software, and to permit persons to whom the Software is
 -- furnished to do so, subject to the following conditions:
-
 -- The above copyright notice and this permission notice shall be included in all
 -- copies or substantial portions of the Software.
-
 -- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 -- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 -- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -51,17 +43,14 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
-
 -- xml2lua
 --  This code is freely distributable under the terms of the MIT license
 --
 -- @author Paul Chakravarti (paulc@passtheaardvark.com)
 -- @author Manoel Campos da Silva Filho
-
 -- luabundler
 -- Copyright (c) 2020 Benjamin Dobell
 -- This code is freely distributable under the terms of the MIT license
-
 local Utils = require("Utils")
 local LayoutIO = require("LayoutIO")
 local Query = require("Query")
@@ -73,7 +62,6 @@ local Mocks = require("Mocks")
 local Dialogs = require("Dialogs")
 local Commands = require("Commands")
 
-
 Mocks.initGmaMock()
 
 -- USER CONFIG
@@ -82,7 +70,6 @@ local pasteRectangleText = "paste" -- The text that the plugin will use to ident
 -- END USER CONFIG
 
 -- NOTE TO USERS --
-
 
 -- Set DEV Mode
 DEV = false
@@ -157,6 +144,9 @@ local targetLayoutReadProgressHandle
 local function Main()
     gma.feedback("Starting Layout Copy and Paste Plugin")
     gma.echo("Starting Layout Copy and Paste Plugin")
+    gma.echo("Setting drive to internal")
+    Commands.setDriveToInternal()
+
     local isValid, sourceLayoutNumber = Utils.validateIntegerInput(
                                             Dialogs.askForSourceLayoutNumber(
                                                 gma.show.getvar(previousSourceLayoutVarName)))
@@ -202,6 +192,7 @@ local function Main()
 
     -- Read in Source Layout XML
     gma.echo("Reading source layout from disk")
+    gma.echo(sourceLayoutFilePath)
     sourceLayoutReadProgressHandle = gma.gui.progress.start("Processing Source Layout")
 
     local sourceLayout
@@ -264,6 +255,7 @@ local function Main()
 
     -- Read in Source Layout XMl
     gma.echo("Reading Target layout from disk")
+    gma.echo(targetLayoutFilePath)
     targetLayoutReadProgressHandle = gma.gui.progress.start("Processing Target Layout")
 
     local targetLayout
@@ -352,7 +344,7 @@ local function Main()
 
     -- Write to Output storage
     gma.echo("Writing merged layout to disk")
-
+    gma.echo(outputLayoutFilePath)
     if DEV == true then
         LayoutIO.write(outputLayoutFileName, output)
     else
@@ -378,8 +370,8 @@ local function Main()
     gma.show.setvar(previousSourceLayoutVarName, tostring(sourceLayoutNumber))
     gma.show.setvar(previousTargetLayoutVarName, tostring(targetLayoutNumber))
 
-    gma.echo("Layout Copy and Paste completed sucessfully")
-    gma.feedback("Layout Copy and Paste completed sucessfully")
+    gma.echo("Layout Copy and Paste completed")
+    gma.feedback("Layout Copy and Paste completed")
 
     return
 end
