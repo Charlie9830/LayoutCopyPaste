@@ -39,6 +39,11 @@ Your elements will be copied from the 'copy' rectangle to the 'paste' rectangle.
 The plugin is very robust, validating all inputs before performing any possibly 'destructive' actions, however if you find that
 your layout has been borked, you can 'oops' out of it. 'oops' back to the command "Import Layout at x /path="lcp_outputlayout.xml"...."
 
+### Important
+For this plugin to work correctly, it calls "SelectDrive 1" each time it is run. This sets the target drive to internal. This means that if you have a USB Flash Drive plugged into the console and you have selected it in the Backup Tab, it will no longer be
+selected. Pressing 'Backup Backup' will now direct saves to the internal drive instead of your Flash Drive until you reset it back
+in the Backup menu.
+
 ### Development Instructions
 #### Dependencies
 - xml2lua (Modified already packaged with source code)

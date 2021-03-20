@@ -5,12 +5,17 @@
 -- Created by Charlie Hall and Ellie Garnett
 -- https://www.github.com/charlie9830
 -- Last Updated March 2021
+--
 -- Source Code available at:
 -- https://github.com/Charlie9830/LayoutCopyPaste
+--
+--
 -- DESCRIPTION --
 -- =========== --
 -- This plugin allows users to Copy and Paste regions from one layout to another, this includes all Text, Rectangle, Pool
 -- and Fixture elements. Bitmap copy is not currently implemented.
+--
+--
 -- INSTRUCTIONS --
 -- ============ --
 -- [1] Draw a rectangle on your layout around the objects you wish to Copy, set the text property on this rectangle to 'copy'
@@ -23,6 +28,14 @@
 -- Your elements will be copied from the 'copy' rectangle to the 'paste' rectangle.
 -- The plugin is very robust, validating all inputs before performing any possibly 'destructive' actions, however if you find that
 -- your layout has been borked, you can 'oops' out of it. 'oops' back to the command "Import Layout at x /path="lcp_outputlayout.xml"...."
+--
+--
+-- IMPORTANT
+-- ========= --
+-- For this plugin to work correctly, it calls "SelectDrive 1" each time it is run. This sets the target drive to internal. This means that if you have a USB Flash Drive plugged into the console and you have selected it in the Backup Tab, it will no longer be
+-- selected. Pressing 'Backup Backup' will now direct saves to the internal drive instead of your Flash Drive until you reset it back
+-- in the Backup menu.
+
 -- LICENSES --
 -- ======== --
 -- Layout Copy and Paste
@@ -43,11 +56,15 @@
 -- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 -- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 -- SOFTWARE.
+--
+--
 -- xml2lua
 --  This code is freely distributable under the terms of the MIT license
 --
 -- @author Paul Chakravarti (paulc@passtheaardvark.com)
 -- @author Manoel Campos da Silva Filho
+--
+--
 -- luabundler
 -- Copyright (c) 2020 Benjamin Dobell
 -- This code is freely distributable under the terms of the MIT license
